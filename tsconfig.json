@@ -1,0 +1,30 @@
+{
+	"extends": "@tsconfig/recommended/tsconfig.json",
+	"compilerOptions": {
+		"strict": false,
+		"module": "commonjs",
+		"target": "es5",
+		"allowJs": true,
+		"lib": ["dom", "dom.iterable", "esnext", "webworker"],
+		"sourceMap": true,
+		"esModuleInterop": true,
+		"noImplicitThis": true,
+		"declaration": false,
+		"allowSyntheticDefaultImports": true,
+		"skipLibCheck": true,
+		"moduleResolution": "node",
+		"noEmitOnError": true,
+		"removeComments": true,
+		"noImplicitAny": true,
+		"forceConsistentCasingInFileNames": true,
+		"noUnusedLocals": false,
+		"pretty": true,
+		"experimentalDecorators": true,
+		"baseUrl": ".",
+		"paths": {
+			"@mirailabs-co/*": ["packages/*/src"]
+		}
+	},
+	"include": ["packages/"],
+	"exclude": ["node_modules", "dist"]
+}

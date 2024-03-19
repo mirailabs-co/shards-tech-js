@@ -1,0 +1,30 @@
+{
+	"name": "@mirailabs-co/shards-tech",
+	"version": "0.0.0",
+	"description": "Shards Tech SDK JavaScript",
+	"author": "",
+	"repository": "github:mirailabs-co/shards-tech-js",
+	"homepage": "",
+	"files": [
+		"dist/"
+	],
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.js",
+	"types": "./dist/types/index.d.ts",
+	"scripts": {
+		"build": "rimraf -rf dist/ && concurrently 'yarn:build:cjs' 'yarn:build:esm' 'yarn:build:types' 'yarn:build:umd'",
+		"build:cjs": "tsc -p tsconfig.cjs.json",
+		"build:esm": "tsc -p tsconfig.esm.json",
+		"build:types": "tsc -p tsconfig.types.json",
+		"clean": "rimraf -rf dist/ && rimraf *.tsbuildinfo",
+		"lint": "eslint src --quiet",
+		"test": "jest",
+		"build:umd": "mirai-scripts build"
+	},
+	"dependencies": {
+		"eventemitter3": "^5.0.1",
+		"jwt-decode": "^3.1.2",
+		"query-string": "^8.1.0",
+		"socket.io-client": "^4.7.2"
+	}
+}
