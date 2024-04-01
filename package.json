@@ -14,7 +14,7 @@
 		"lint": "eslint --quiet packages",
 		"pack:lerna": "lerna exec 'yarn pack'",
 		"publish:dry": "lerna publish --no-git-tag-version --no-push",
-		"publish": "lerna publish --force-publish",
+		"publish-packages": "lerna publish --force-publish",
 		"test": "lerna run test",
 		"test:all": "jest",
 		"pre-commit": "yarn lint-staged",
