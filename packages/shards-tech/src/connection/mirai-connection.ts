@@ -14,6 +14,7 @@ class MiraiConnection extends Connection {
 
 	// FOR WS CONNECTION
 	public accessToken: string;
+	public clientId: string;
 	public ws: InstanceType<typeof SignerWebSocketService>;
 	private isDisconnecting: boolean = false;
 
@@ -21,6 +22,7 @@ class MiraiConnection extends Connection {
 		super(opts);
 
 		this.accessToken = opts.accessToken || null;
+		this.clientId = opts.clientId || null;
 	}
 
 	public static async init(opts: ConnectionOpts) {
@@ -54,7 +56,7 @@ class MiraiConnection extends Connection {
 			await this._registerListener();
 
 			if (this.accessToken) {
-				await this.register(this.accessToken);
+				await this.register(this.accessToken, this.clientId);
 			}
 
 			this.emit('open');
@@ -64,7 +66,7 @@ class MiraiConnection extends Connection {
 		}
 	}
 
-	private async register(accessToken: string): Promise<SignerWebSocketService> {
+	private async register(accessToken: string, clientId: string): Promise<SignerWebSocketService> {
 		if (typeof this.ws !== 'undefined') {
 			return this.ws;
 		}
@@ -88,6 +90,7 @@ class MiraiConnection extends Connection {
 			this.ws = new SignerWebSocketService({
 				url: this.guildServerUrl,
 				accessToken,
+				clientId,
 			});
 
 			this.initializing = false;
@@ -99,19 +102,13 @@ class MiraiConnection extends Connection {
 		}
 	}
 
-	public async connect({ accessToken }: { accessToken: string }): Promise<boolean> {
+	public async connect({ accessToken, clientId }: { accessToken: string, clientId: string }): Promise<boolean> {
 		return new Promise(async (resolve, reject) => {
 			try {
 				if (!this.ws || this.ws === undefined) {
-					await this.register(accessToken);
+					await this.register(accessToken, clientId);
 				}
 				const socket = await this.ws.establish(true);
-
-				const miraiInfo = await parseUserInfoFromAccessToken(accessToken);
-				if (!miraiInfo) {
-					reject(new Error('MiraiID token is invalid'));
-				}
-				const { sub, aud } = miraiInfo;
 
 				socket.on('disconnect', async (reason) => {
 					if (this.isDisconnecting) {

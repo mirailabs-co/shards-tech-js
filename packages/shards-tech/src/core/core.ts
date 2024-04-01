@@ -1,6 +1,5 @@
 import EventEmitter from 'eventemitter3';
 import { Connection } from '../connection/connection';
-import { LeaderBoards } from '../transports/dtos/LeaderBoard.dtos';
 
 export type ICore = {
 	clientId: string;
@@ -33,8 +32,10 @@ export abstract class Core extends EventEmitter<CoreEventType> {
 	 *
 	 * @param {ICore} opts - The options for the constructor.
 	 */
+	clientId: string;
 	constructor(opts: ICore) {
 		super();
+		this.clientId = opts.clientId;
 	}
 
 	abstract connection: Connection;

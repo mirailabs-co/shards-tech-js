@@ -6,6 +6,7 @@ import { BaseWebSocketService, IWSOpts } from './ws-base';
 export class SignerWebSocketService extends BaseWebSocketService {
 	private url: string;
 	private _accessToken: string;
+	_clientId: string;
 
 	public socket: WebSocketConnection;
 
@@ -14,6 +15,7 @@ export class SignerWebSocketService extends BaseWebSocketService {
 
 		this.url = opts.url;
 		this._accessToken = opts.accessToken;
+		this._clientId = opts.clientId;
 	}
 
 	public disconnect = async () => {
@@ -28,8 +30,7 @@ export class SignerWebSocketService extends BaseWebSocketService {
 	}
 
 	public establish = async (acknowledgement?: boolean): Promise<WebSocketConnection> => {
-		const headers = await this.getHeaders(this.accessToken);
-
+		const headers = await this.getHeaders(this.accessToken, this._clientId);
 		// const socket = io(this.url, {
 		// 	autoConnect: false,
 		// 	reconnection: true,
