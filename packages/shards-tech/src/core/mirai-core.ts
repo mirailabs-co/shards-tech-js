@@ -380,18 +380,26 @@ export class MiraiCore extends Core {
 			const query = queryString.stringify(ordered);
 			const url = `${dappUrl}/${page}?${query}`;
 
-			if (this.userInfo?.address) {
-				await ShardsTechApi.INSTANCE.actionModule.sendNotification(
-					this.accessToken,
-					url,
-					this.gameConfig.clientId,
-				);
-			} else {
+			if (this.gameConfig?.supportWebBrowser) {
 				if (typeof window !== 'undefined') {
-					const redirectUrl = `https://go.miraiapp.io/gsf/${encodeURIComponent(url)}`;
-					window?.open(redirectUrl, '_blank');
+					window?.open(url, '_blank');
 				} else {
 					throw new Error('Cannot open browser');
+				}
+			} else {
+				if (this.userInfo?.address) {
+					await ShardsTechApi.INSTANCE.actionModule.sendNotification(
+						this.accessToken,
+						url,
+						this.gameConfig.clientId,
+					);
+				} else {
+					if (typeof window !== 'undefined') {
+						const redirectUrl = `https://go.miraiapp.io/gsf/${encodeURIComponent(url)}`;
+						window?.open(redirectUrl, '_blank');
+					} else {
+						throw new Error('Cannot open browser');
+					}
 				}
 			}
 			while (true) {

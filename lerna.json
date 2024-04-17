@@ -3,7 +3,7 @@
 		"packages/*"
 	],
 	"$schema": "node_modules/lerna/schemas/lerna-schema.json",
-	"version": "1.0.25",
+	"version": "1.0.35",
 	"npmClient": "yarn",
 	"private": true
 }

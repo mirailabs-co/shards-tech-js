@@ -16,4 +16,5 @@ export type GameConfig = {
   sendNotificationHashKey: string;
   memberGuildConfig: Record<string, any>;
   createdAt: string;
+  supportWebBrowser: boolean;
 };
