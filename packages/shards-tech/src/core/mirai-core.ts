@@ -360,7 +360,14 @@ export class MiraiCore extends Core {
 				gameId,
 			} as Record<string, any>;
 
-			if (this.userInfo?.address) {
+			var ordered = {} as Record<string, any>;
+			Object.keys(paramObj)
+				.sort()
+				.forEach(function (key) {
+					ordered[key] = paramObj[key];
+				});
+
+			if (this.userInfo?.address && !this.gameConfig?.supportWebBrowser) {
 				paramObj.address = this.userInfo.address;
 				const hash = await ShardsTechApi.INSTANCE.actionModule.generateHash(
 					this.accessToken,
@@ -369,13 +376,6 @@ export class MiraiCore extends Core {
 				);
 				ordered.hash = hash;
 			}
-
-			var ordered = {} as Record<string, any>;
-			Object.keys(paramObj)
-				.sort()
-				.forEach(function (key) {
-					ordered[key] = paramObj[key];
-				});
 
 			const query = queryString.stringify(ordered);
 			const url = `${dappUrl}/${page}?${query}`;
