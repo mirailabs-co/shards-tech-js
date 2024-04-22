@@ -571,4 +571,20 @@ export class MiraiCore extends Core {
 		);
 		return data;
 	}
+
+	public async changeGuildOwner(guildAddress: string, newOwnerId: string, oldOwnerUserId: string) {
+		const data = await this._createAction(
+			'change-guild-owner',
+			{
+				oldOwnerUserId,
+				guildAddress,
+				newOwnerId,
+			},
+			{
+				guildAddress,
+				newOwnerId,
+			},
+		);
+		return data;
+	}
 }
