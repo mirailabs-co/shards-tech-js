@@ -16,3 +16,14 @@ export type Guilds = {
   endAllowUpdateTimestamp: number;
   createdAt: Date;
 };
+
+
+export type UserUpdateGuildInput = {
+  slotPrice: number;
+  name: string;
+  avatar: string;
+  description: string;
+  rewardShareForMembers: number;
+  txGuildOwnerShare: number;
+  guildOwnerShare: number;
+};

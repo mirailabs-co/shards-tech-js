@@ -266,6 +266,44 @@ class ShardsTechApi extends BaseHttpService {
 				},
 			);
 		},
+
+		acceptJoinGuildRequest: async (
+			accessToken: string,
+			userId: string,
+			guildId: string,
+			clientId: string,
+		): Promise<boolean> => {
+			return this.sendPost<boolean>(
+				'v1/join-guild-request/user-accept',
+				{
+					userId,
+					guildId,
+				},
+				{
+					'Authorization': `Bearer ${accessToken}`,
+					'x-client-id': clientId,
+				},
+			);
+		},
+
+		rejectJoinGuildRequest: async (
+			accessToken: string,
+			userId: string,
+			guildId: string,
+			clientId: string,
+		): Promise<boolean> => {
+			return this.sendPost<boolean>(
+				'v1/join-guild-request/user-reject',
+				{
+					userId,
+					guildId,
+				},
+				{
+					'Authorization': `Bearer ${accessToken}`,
+					'x-client-id': clientId,
+				},
+			);
+		},
 	};
 
 	leaderBoardModule = {

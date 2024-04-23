@@ -4,7 +4,7 @@ import { GameConfig } from '../constants/types';
 import { NoAccessToken, SDKError } from '../errors';
 import { GetHistoryChatDto, SendMessageDto } from '../transports/dtos/GuildChat.dtos';
 import { GetGuildScoreDto } from '../transports/dtos/GuildScore.dtos';
-import { Guilds } from '../transports/dtos/Guilds.dtos';
+import { Guilds, UserUpdateGuildInput } from '../transports/dtos/Guilds.dtos';
 import { GetTransactionHistoryDto } from '../transports/dtos/TransactionHistoty.dto';
 import { ShardsTechApi } from '../transports/http/http-shardstech';
 import { Core, ICore } from './core';
@@ -117,7 +117,7 @@ export class MiraiCore extends Core {
 		}
 	}
 
-	public async userUpdateGuild(guildId: string, body: any) {
+	public async userUpdateGuild(guildId: string, body: UserUpdateGuildInput) {
 		try {
 			const data = await ShardsTechApi.INSTANCE.guildsModule.userUpdateGuild(
 				this.accessToken,
@@ -294,6 +294,34 @@ export class MiraiCore extends Core {
 		try {
 			const data = await ShardsTechApi.INSTANCE.joinGuildRequestModule.getJoinGuildOfUser(
 				this.accessToken,
+				this.gameConfig.clientId,
+			);
+			return data;
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
+	public async acceptJoinGuildRequest(userId: string, guildId: string) {
+		try {
+			const data = await ShardsTechApi.INSTANCE.joinGuildRequestModule.acceptJoinGuildRequest(
+				this.accessToken,
+				userId,
+				guildId,
+				this.gameConfig.clientId,
+			);
+			return data;
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
+	public async rejectJoinGuildRequest(userId: string, guildId: string) {
+		try {
+			const data = await ShardsTechApi.INSTANCE.joinGuildRequestModule.rejectJoinGuildRequest(
+				this.accessToken,
+				userId,
+				guildId,
 				this.gameConfig.clientId,
 			);
 			return data;
