@@ -12,7 +12,7 @@ import { BaseHttpService } from './http-base';
 class ShardsTechApi extends BaseHttpService {
 	public static readonly INSTANCE = new ShardsTechApi();
 
-	constructor(env = 'production') {
+	constructor(env = 'development') {
 		const API_GUILD_URL = env === 'production' ? 'https://api.shards.tech' : 'https://api-dev.shards.tech';
 		super(API_GUILD_URL);
 	}
