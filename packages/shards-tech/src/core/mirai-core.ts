@@ -16,6 +16,8 @@ export class MiraiCore extends Core {
 	gameConfig: GameConfig;
 	userInfo: any;
 	accessToken: string;
+	env: any;
+	INSTANCE: ShardsTechApi;
 
 	constructor(opts?: ICore) {
 		super(opts);
@@ -54,16 +56,19 @@ export class MiraiCore extends Core {
 			}
 			this.accessToken = accessToken;
 
-			const gameConfig = await ShardsTechApi.INSTANCE.getConfig(accessToken, this.clientId);
+			this.INSTANCE = new ShardsTechApi(this.env);
+
+			const gameConfig = await this.INSTANCE.getConfig(accessToken, this.clientId);
 			this.gameConfig = gameConfig;
 			this.emit('connecting');
 
-			const userInfo = await ShardsTechApi.INSTANCE.usersModule.getUser(accessToken, this.clientId);
+			const userInfo = await this.INSTANCE.usersModule.getUser(accessToken, this.clientId);
 			this.userInfo = userInfo;
 
 			const newConnection = await MiraiConnection.init({
 				accessToken,
 				clientId: this.clientId,
+				env: this.env,
 			});
 
 			this.emit('connecting');
@@ -106,7 +111,7 @@ export class MiraiCore extends Core {
 
 	public async getGuildOfUser() {
 		try {
-			const data = await ShardsTechApi.INSTANCE.guildsModule.getGuilds(
+			const data = await this.INSTANCE.guildsModule.getGuilds(
 				this.accessToken,
 				this.gameConfig.clientId,
 			);
@@ -119,7 +124,7 @@ export class MiraiCore extends Core {
 
 	public async userUpdateGuild(guildId: string, body: UserUpdateGuildInput) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.guildsModule.userUpdateGuild(
+			const data = await this.INSTANCE.guildsModule.userUpdateGuild(
 				this.accessToken,
 				guildId,
 				body,
@@ -133,7 +138,7 @@ export class MiraiCore extends Core {
 
 	public async getLeaderBoards() {
 		try {
-			const data = await ShardsTechApi.INSTANCE.leaderBoardModule.getLeaderBoards(
+			const data = await this.INSTANCE.leaderBoardModule.getLeaderBoards(
 				this.accessToken,
 				this.gameConfig.clientId,
 			);
@@ -145,7 +150,7 @@ export class MiraiCore extends Core {
 
 	public async getGuildScores(query: GetGuildScoreDto) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.guildScoreModule.getGuildScoreForLeaderBoard(
+			const data = await this.INSTANCE.guildScoreModule.getGuildScoreForLeaderBoard(
 				this.accessToken,
 				query,
 				this.gameConfig.clientId,
@@ -159,7 +164,7 @@ export class MiraiCore extends Core {
 	// Guild Fraction and Slot Information
 	public async getMyFractions() {
 		try {
-			const data = await ShardsTechApi.INSTANCE.userSharesGuildModule.getGuildUserHaveShare(
+			const data = await this.INSTANCE.userSharesGuildModule.getGuildUserHaveShare(
 				this.accessToken,
 				this.gameConfig.clientId,
 			);
@@ -171,7 +176,7 @@ export class MiraiCore extends Core {
 
 	public async getTotalFractionOfGuild(guildId: string) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.guildsModule.getShareOfGuild(
+			const data = await this.INSTANCE.guildsModule.getShareOfGuild(
 				this.accessToken,
 				guildId,
 				this.gameConfig.clientId,
@@ -184,7 +189,7 @@ export class MiraiCore extends Core {
 
 	public async getMyFractionOfGuild(guildId: string) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.guildsModule.getShareUserHaveInGuild(
+			const data = await this.INSTANCE.guildsModule.getShareUserHaveInGuild(
 				this.accessToken,
 				guildId,
 				this.gameConfig.clientId,
@@ -197,7 +202,7 @@ export class MiraiCore extends Core {
 
 	public async getBuySlotPrice(guildId: string) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.userSellGuildModule.getSlotPrice(
+			const data = await this.INSTANCE.userSellGuildModule.getSlotPrice(
 				this.accessToken,
 				guildId,
 				this.gameConfig.clientId,
@@ -210,7 +215,7 @@ export class MiraiCore extends Core {
 
 	public async getBuyFractionPrice(guildId: string, amount: number) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.guildsModule.getSharePrice(
+			const data = await this.INSTANCE.guildsModule.getSharePrice(
 				this.accessToken,
 				guildId,
 				amount,
@@ -224,7 +229,7 @@ export class MiraiCore extends Core {
 
 	public async getSellFractionPrice(guildId: string, amount: number) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.guildsModule.getSellPrice(
+			const data = await this.INSTANCE.guildsModule.getSellPrice(
 				this.accessToken,
 				guildId,
 				amount,
@@ -239,7 +244,7 @@ export class MiraiCore extends Core {
 	// Transaction History
 	public async getTransactionHistoryOfUser(query: GetTransactionHistoryDto) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.transactionHistoryModule.getTransactionHistoryOfUser(
+			const data = await this.INSTANCE.transactionHistoryModule.getTransactionHistoryOfUser(
 				this.accessToken,
 				query,
 				this.gameConfig.clientId,
@@ -252,7 +257,7 @@ export class MiraiCore extends Core {
 
 	public async getTransactionHistoryOfGuild(query: GetTransactionHistoryDto) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.transactionHistoryModule.getTransactionHistoryOfGuild(
+			const data = await this.INSTANCE.transactionHistoryModule.getTransactionHistoryOfGuild(
 				this.accessToken,
 				query,
 				this.gameConfig.clientId,
@@ -266,7 +271,7 @@ export class MiraiCore extends Core {
 	// Join Guild Request
 	public async createJoinGuildRequest(guildId: string) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.joinGuildRequestModule.createJoinGuildRequest(
+			const data = await this.INSTANCE.joinGuildRequestModule.createJoinGuildRequest(
 				this.accessToken,
 				guildId,
 				this.gameConfig.clientId,
@@ -279,7 +284,7 @@ export class MiraiCore extends Core {
 
 	public async getJoinGuildRequest(guildId: string) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.joinGuildRequestModule.getJoinGuildRequest(
+			const data = await this.INSTANCE.joinGuildRequestModule.getJoinGuildRequest(
 				this.accessToken,
 				guildId,
 				this.gameConfig.clientId,
@@ -292,7 +297,7 @@ export class MiraiCore extends Core {
 
 	public async getJoinGuildOfUser() {
 		try {
-			const data = await ShardsTechApi.INSTANCE.joinGuildRequestModule.getJoinGuildOfUser(
+			const data = await this.INSTANCE.joinGuildRequestModule.getJoinGuildOfUser(
 				this.accessToken,
 				this.gameConfig.clientId,
 			);
@@ -304,7 +309,7 @@ export class MiraiCore extends Core {
 
 	public async acceptJoinGuildRequest(userId: string, guildId: string) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.joinGuildRequestModule.acceptJoinGuildRequest(
+			const data = await this.INSTANCE.joinGuildRequestModule.acceptJoinGuildRequest(
 				this.accessToken,
 				userId,
 				guildId,
@@ -318,7 +323,7 @@ export class MiraiCore extends Core {
 
 	public async rejectJoinGuildRequest(userId: string, guildId: string) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.joinGuildRequestModule.rejectJoinGuildRequest(
+			const data = await this.INSTANCE.joinGuildRequestModule.rejectJoinGuildRequest(
 				this.accessToken,
 				userId,
 				guildId,
@@ -333,7 +338,7 @@ export class MiraiCore extends Core {
 	// Guild Chat
 	public async getGuildChatHistory(query: GetHistoryChatDto) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.guildChatModule.getHistoryChat(
+			const data = await this.INSTANCE.guildChatModule.getHistoryChat(
 				this.accessToken,
 				query,
 				this.gameConfig.clientId,
@@ -346,7 +351,7 @@ export class MiraiCore extends Core {
 
 	public async getUserOnlineInGuild() {
 		try {
-			const data = await ShardsTechApi.INSTANCE.guildChatModule.getUserOnlineInGuild(
+			const data = await this.INSTANCE.guildChatModule.getUserOnlineInGuild(
 				this.accessToken,
 				this.gameConfig.clientId,
 			);
@@ -358,7 +363,7 @@ export class MiraiCore extends Core {
 
 	async sendMessage(body: SendMessageDto) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.guildChatModule.sendMessage(
+			const data = await this.INSTANCE.guildChatModule.sendMessage(
 				this.accessToken,
 				body,
 				this.gameConfig.clientId,
@@ -371,7 +376,7 @@ export class MiraiCore extends Core {
 
 	private async _createAction(type: string, params: Record<string, any>, metadata: Record<string, any>) {
 		try {
-			const action = await ShardsTechApi.INSTANCE.actionModule.createAction(
+			const action = await this.INSTANCE.actionModule.createAction(
 				this.accessToken,
 				type,
 				metadata,
@@ -397,7 +402,7 @@ export class MiraiCore extends Core {
 
 			if (this.userInfo?.address && !this.gameConfig?.supportWebBrowser) {
 				paramObj.address = this.userInfo.address;
-				const hash = await ShardsTechApi.INSTANCE.actionModule.generateHash(
+				const hash = await this.INSTANCE.actionModule.generateHash(
 					this.accessToken,
 					paramObj,
 					this.gameConfig.clientId,
@@ -416,7 +421,7 @@ export class MiraiCore extends Core {
 				}
 			} else {
 				if (this.userInfo?.address) {
-					await ShardsTechApi.INSTANCE.actionModule.sendNotification(
+					await this.INSTANCE.actionModule.sendNotification(
 						this.accessToken,
 						url,
 						this.gameConfig.clientId,
@@ -431,7 +436,7 @@ export class MiraiCore extends Core {
 				}
 			}
 			while (true) {
-				const action = await ShardsTechApi.INSTANCE.actionModule.getAction(
+				const action = await this.INSTANCE.actionModule.getAction(
 					this.accessToken,
 					actionId,
 					this.gameConfig.clientId,
@@ -488,7 +493,7 @@ export class MiraiCore extends Core {
 
 	public async sellSlot(guildId: string, price: number) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.memberModule.sellMemberSlot(
+			const data = await this.INSTANCE.memberModule.sellMemberSlot(
 				this.accessToken,
 				guildId,
 				price,
@@ -502,7 +507,7 @@ export class MiraiCore extends Core {
 
 	public async burnSlot(guildId: string) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.memberModule.burnMemberSlot(
+			const data = await this.INSTANCE.memberModule.burnMemberSlot(
 				this.accessToken,
 				guildId,
 				this.gameConfig.clientId,
@@ -515,7 +520,7 @@ export class MiraiCore extends Core {
 
 	public async updateSellSlot(sellSlotId: string, price: number) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.memberModule.updateSellMemberSlot(
+			const data = await this.INSTANCE.memberModule.updateSellMemberSlot(
 				this.accessToken,
 				sellSlotId,
 				price,
@@ -529,7 +534,7 @@ export class MiraiCore extends Core {
 
 	public async cancelSellSlot(sellSlotId: string) {
 		try {
-			const data = await ShardsTechApi.INSTANCE.memberModule.cancelSellMemberSlot(
+			const data = await this.INSTANCE.memberModule.cancelSellMemberSlot(
 				this.accessToken,
 				sellSlotId,
 				this.gameConfig.clientId,
@@ -542,7 +547,7 @@ export class MiraiCore extends Core {
 
 	public async getMySellMemberSlot() {
 		try {
-			const data = await ShardsTechApi.INSTANCE.userSellGuildModule.getMySellMemberSlot(
+			const data = await this.INSTANCE.userSellGuildModule.getMySellMemberSlot(
 				this.accessToken,
 				this.gameConfig.clientId,
 			);

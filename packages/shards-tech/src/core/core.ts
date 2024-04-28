@@ -3,6 +3,7 @@ import { Connection } from '../connection/connection';
 
 export type ICore = {
 	clientId: string;
+	env?: string;
 };
 
 export type CoreEventType =
@@ -33,9 +34,11 @@ export abstract class Core extends EventEmitter<CoreEventType> {
 	 * @param {ICore} opts - The options for the constructor.
 	 */
 	clientId: string;
+	env?: string;
 	constructor(opts: ICore) {
 		super();
 		this.clientId = opts.clientId;
+		this.env = opts.env;
 	}
 
 	abstract connection: Connection;

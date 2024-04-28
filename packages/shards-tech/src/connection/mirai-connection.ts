@@ -6,7 +6,7 @@ class MiraiConnection extends Connection {
 	public topicId: string;
 	public wcTopicId: string;
 
-	private readonly guildServerUrl: string = 'https://api-dev.shards.tech';
+	private guildServerUrl: string = 'https://api-dev.shards.tech';
 
 	private pending = false;
 	private initializing = false;
@@ -23,6 +23,11 @@ class MiraiConnection extends Connection {
 
 		this.accessToken = opts.accessToken || null;
 		this.clientId = opts.clientId || null;
+		const env = opts.env;
+
+		if (env === 'production') {
+			this.guildServerUrl = 'https://api.shards.tech';
+		}
 	}
 
 	public static async init(opts: ConnectionOpts) {

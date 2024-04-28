@@ -4,6 +4,7 @@ import { SignerWebSocketService } from '../transports/websocket/ws-signer';
 export type ConnectionOpts = {
 	accessToken?: string;
 	clientId?: string;
+	env?: string;
 };
 
 export interface IConnection {}

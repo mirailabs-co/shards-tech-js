@@ -9,12 +9,11 @@ import { GetTransactionHistoryDto, TransactionHistory } from '../dtos/Transactio
 import { UserSellGuild } from '../dtos/UserSellGuild.dtos';
 import { BaseHttpService } from './http-base';
 
-const API_GUILD_URL: string = 'https://api-dev.shards.tech';
-
 class ShardsTechApi extends BaseHttpService {
 	public static readonly INSTANCE = new ShardsTechApi();
 
-	private constructor() {
+	constructor(env = 'production') {
+		const API_GUILD_URL = env === 'production' ? 'https://api.shards.tech' : 'https://api-dev.shards.tech';
 		super(API_GUILD_URL);
 	}
 
