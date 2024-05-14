@@ -374,13 +374,14 @@ export class MiraiCore extends Core {
 		}
 	}
 
-	private async _createAction(type: string, params: Record<string, any>, metadata: Record<string, any>) {
+	private async _createAction(type: string, params: Record<string, any>, metadata: Record<string, any>, chain?: string) {
 		try {
 			const action = await this.INSTANCE.actionModule.createAction(
 				this.accessToken,
 				type,
 				metadata,
 				this.gameConfig.clientId,
+				chain,
 			);
 			const actionId = action._id;
 			const miraiAppUrl = 'miraiapp://gsf/';
@@ -461,6 +462,7 @@ export class MiraiCore extends Core {
 		rewardShareForMembers: number,
 		guildOwnerShare: number,
 		metadata: Record<string, any>,
+		chain?: string,
 	) {
 		const data = await this._createAction(
 			'create-guild',
@@ -472,11 +474,12 @@ export class MiraiCore extends Core {
 				guildOwnerShare,
 			},
 			metadata,
+			chain,
 		);
 		return data;
 	}
 
-	public async buySlot(guildAddress: string, seller: string, price: number) {
+	public async buySlot(guildAddress: string, seller: string, price: number, chain?: string) {
 		const data = await this._createAction(
 			'buy-slot',
 			{
@@ -487,6 +490,7 @@ export class MiraiCore extends Core {
 				seller,
 				price,
 			},
+			chain,
 		);
 		return data;
 	}
@@ -557,7 +561,7 @@ export class MiraiCore extends Core {
 		}
 	}
 
-	public async buyFraction(guildAddress: string, amount: number) {
+	public async buyFraction(guildAddress: string, amount: number, chain?: string) {
 		const data = await this._createAction(
 			'buy-share',
 			{
@@ -565,11 +569,12 @@ export class MiraiCore extends Core {
 				amount,
 			},
 			{},
+			chain,
 		);
 		return data;
 	}
 
-	public async sellFraction(guildAddress: string, amount: number) {
+	public async sellFraction(guildAddress: string, amount: number, chain?: string) {
 		const data = await this._createAction(
 			'sell-share',
 			{
@@ -577,6 +582,7 @@ export class MiraiCore extends Core {
 				amount,
 			},
 			{},
+			chain,
 		);
 		return data;
 	}
@@ -594,13 +600,14 @@ export class MiraiCore extends Core {
 		return data;
 	}
 
-	public async disbandGuild(guildAddress: string) {
+	public async disbandGuild(guildAddress: string, chain?: string) {
 		const data = await this._createAction(
 			'disband-guild',
 			{
 				guildAddress,
 			},
 			{},
+			chain,
 		);
 		return data;
 	}
