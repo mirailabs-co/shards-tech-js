@@ -34,10 +34,11 @@ class ShardsTechApi extends BaseHttpService {
 			type: string,
 			metadata: Record<string, any>,
 			clientId: string,
+			chain?: string,
 		): Promise<Action> => {
 			return this.sendPost<Action>(
 				'v1/actions',
-				{ type, metadata },
+				{ type, metadata, chain },
 				{
 					'Authorization': `Bearer ${accessToken}`,
 					'x-client-id': clientId,
