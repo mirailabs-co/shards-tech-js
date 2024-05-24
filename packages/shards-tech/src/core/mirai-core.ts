@@ -388,10 +388,12 @@ export class MiraiCore extends Core {
 			const dappUrl = this.gameConfig.linkDapp;
 			const page = type === 'create-guild' ? '' : type;
 			const gameId = this.gameConfig.clientId;
+			const callBack = this.gameConfig.callBack;
 			const paramObj = {
 				...params,
 				actionId,
 				gameId,
+				callBack,
 			} as Record<string, any>;
 
 			var ordered = {} as Record<string, any>;
