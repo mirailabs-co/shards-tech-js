@@ -273,7 +273,7 @@ class ShardsTechApi extends BaseHttpService {
 			guildId: string,
 			clientId: string,
 		): Promise<boolean> => {
-			return this.sendPost<boolean>(
+			return this.sendPut<boolean>(
 				'v1/join-guild-request/user-accept',
 				{
 					userId,
@@ -292,7 +292,7 @@ class ShardsTechApi extends BaseHttpService {
 			guildId: string,
 			clientId: string,
 		): Promise<boolean> => {
-			return this.sendPost<boolean>(
+			return this.sendPut<boolean>(
 				'v1/join-guild-request/user-reject',
 				{
 					userId,
