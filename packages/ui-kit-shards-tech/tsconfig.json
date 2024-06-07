@@ -1,0 +1,9 @@
+{
+	"extends": "../../tsconfig.json",
+	"include": ["src", "test"],
+	"compilerOptions": {
+    "jsx": "react",
+		"outDir": "dist/",
+		"experimentalDecorators": true
+	}
+}
