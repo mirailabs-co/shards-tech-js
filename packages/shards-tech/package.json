@@ -27,7 +27,7 @@
 		"query-string": "^8.1.0",
 		"socket.io-client": "^4.7.2"
 	},
-	"gitHead": "66216fdc2ee04c95c985b5def91c59e3bf430718",
+	"gitHead": "456bfc3bccc8065cde7072a77109c98d2c60282a",
 	"publishConfig": {
 		"access": "public"
 	}
