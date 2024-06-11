@@ -1,6 +1,7 @@
 {
 	"extends": "@tsconfig/recommended/tsconfig.json",
 	"compilerOptions": {
+		"jsx": "react",	
 		"strict": false,
 		"module": "commonjs",
 		"target": "es5",
