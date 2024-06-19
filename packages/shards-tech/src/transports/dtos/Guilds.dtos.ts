@@ -26,4 +26,5 @@ export type UserUpdateGuildInput = {
   rewardShareForMembers: number;
   txGuildOwnerShare: number;
   guildOwnerShare: number;
+  requireJoinGuildRequest: boolean;
 };
