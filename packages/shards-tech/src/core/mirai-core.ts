@@ -335,6 +335,20 @@ export class MiraiCore extends Core {
 		}
 	}
 
+	public async inviteUser(userId: string, guildId: string) {
+		try {
+			const data = await this.INSTANCE.joinGuildRequestModule.inviteUser(
+				this.accessToken,
+				userId,
+				guildId,
+				this.gameConfig.clientId,
+			);
+			return data;
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
 	// Guild Chat
 	public async getGuildChatHistory(query: GetHistoryChatDto) {
 		try {
