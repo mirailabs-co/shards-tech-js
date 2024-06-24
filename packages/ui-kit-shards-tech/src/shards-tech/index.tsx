@@ -10,7 +10,7 @@ import MySellSlot from './MySellSlot';
 import MyHistory from './MyHistory';
 import TabChat from './_TabChat';
 
-export default function Home() {
+export default function Main() {
 	const { shardsTechCore } = useContext(HomeContext);
 
 	const [myShards, setMyShards] = useState<any>(null);
