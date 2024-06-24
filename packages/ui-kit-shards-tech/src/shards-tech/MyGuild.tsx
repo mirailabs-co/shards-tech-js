@@ -1,6 +1,5 @@
-'use client';
-import React from 'react';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { HomeContext } from '../context';
 import {
 	Avatar,
 	Badge,
@@ -18,14 +17,28 @@ import {
 	Tabs,
 	Typography,
 } from 'antd';
-import { CrownTwoTone, FireTwoTone, MoreOutlined, PictureFilled, TagTwoTone, UserOutlined } from '@ant-design/icons';
-import { shortAddress } from '../app-utils';
+import {
+	CrownTwoTone,
+	FireTwoTone,
+	FormOutlined,
+	MoreOutlined,
+	PictureFilled,
+	TagTwoTone,
+	UserAddOutlined,
+	UserOutlined,
+} from '@ant-design/icons';
+import { parseGuildConfig, shortAddress } from '../app-utils';
 import { TransactionGuild } from '../app-constants/type';
-import { HomeContext } from '../context';
-import HandleForm from './_Form';
+import HandleForm from '../shards-tech/_Form';
+import FormUpdateGuild from '../shards-tech/FormUpdateGuild';
+import ModalInvite from '../shards-tech/ModalInvite';
+import React from 'react';
+
+const { Paragraph } = Typography;
 
 const MyGuild = () => {
 	const { shardsTechCore } = useContext(HomeContext);
+	console.log('shardsTechCore >>>', shardsTechCore);
 	const [transactionHistoryOfGuild, setTransactionHistoryOfGuild] = useState<TransactionGuild[]>();
 	const [handleFormVisible, setHandleFormVisible] = useState<boolean>(false);
 
@@ -34,6 +47,23 @@ const MyGuild = () => {
 	const [mySellSlot, setMySellSlot] = useState<any>(null);
 	const [openChangeOwnerModal, setOpenChangeOwnerModal] = useState<boolean>(false);
 	const [newOwner, setNewOwner] = useState<any>(null);
+	const [openUpdateForm, setOpenUpdateForm] = useState<boolean>(false);
+	const [openModalInvite, setOpenModalInvite] = useState<boolean>(false);
+
+	const earningDistribution = useMemo(() => {
+		let result = parseGuildConfig(
+			shardsTechCore?.userGuild?.rewardShareForMembers,
+			shardsTechCore?.userGuild?.guildOwnerShare,
+		);
+
+		result = {
+			sharePercent: Math.round(result.sharePercent * 100),
+			guildOwnerPercent: Math.round(result.guildOwnerPercent * 100),
+			memberPercent: Math.round(result.memberPercent * 100),
+		};
+
+		return result;
+	}, [shardsTechCore?.userGuild]);
 
 	const getTransactionHistoryOfGuild = async () => {
 		try {
@@ -85,7 +115,11 @@ const MyGuild = () => {
 			dataIndex: 'address',
 			key: 'address',
 			render: (address: string) => {
-				return shortAddress(address);
+				return (
+					<Paragraph style={{ margin: 0 }} copyable={{ text: address }}>
+						{shortAddress(address) || '--'}
+					</Paragraph>
+				);
 			},
 		},
 		{
@@ -93,7 +127,11 @@ const MyGuild = () => {
 			dataIndex: 'userId',
 			key: 'userId',
 			render: (uId: string) => {
-				return uId.slice(0, 4) + '...' + uId.slice(-4);
+				return (
+					<Paragraph style={{ margin: 0 }} copyable={{ text: uId }}>
+						{shortAddress(uId) || '--'}
+					</Paragraph>
+				);
 			},
 		},
 		{
@@ -101,7 +139,11 @@ const MyGuild = () => {
 			dataIndex: '_id',
 			key: '_id',
 			render: (id: string) => {
-				return id.slice(0, 4) + '...' + id.slice(-4);
+				return (
+					<Paragraph style={{ margin: 0 }} copyable={{ text: id }}>
+						{shortAddress(id) || '--'}
+					</Paragraph>
+				);
 			},
 		},
 	];
@@ -134,22 +176,45 @@ const MyGuild = () => {
 	return (
 		<>
 			<div className="px-4">
-				<Space align="center" size={'middle'} className="mb-4">
-					{shardsTechCore.userGuild.metadata?.avatar ? (
-						<Avatar src={shardsTechCore.userGuild.metadata?.avatar} size={64} shape="square" />
-					) : (
-						<Avatar icon={<PictureFilled />} size={64} shape="square" />
-					)}
-					<Space direction="vertical" style={{ gap: '0.25rem' }}>
-						<Typography.Title className="my-0" level={4}>
-							{shardsTechCore.userGuild.name}
-						</Typography.Title>
-						<Space>
-							<Badge count={`Lv: ${shardsTechCore.userGuild.metadata?.level || '--'}`} color="#1677ff" />
-							<Badge count={`Rank: ${shardsTechCore.userGuild.metadata?.rank || '--'}`} color="#52c41a" />
+				<div
+					style={{
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'space-between',
+					}}
+				>
+					<Space align="center" size={'middle'} className="mb-4">
+						{shardsTechCore.userGuild.metadata?.avatar ? (
+							<Avatar src={shardsTechCore.userGuild.metadata?.avatar} size={64} shape="square" />
+						) : (
+							<Avatar icon={<PictureFilled />} size={64} shape="square" />
+						)}
+						<Space direction="vertical" style={{ gap: '0.25rem' }}>
+							<Typography.Title className="my-0" level={4}>
+								{shardsTechCore.userGuild.name}
+							</Typography.Title>
+							<Space>
+								<Badge
+									count={`Lv: ${shardsTechCore.userGuild.metadata?.level || '--'}`}
+									color="#1677ff"
+								/>
+								<Badge
+									count={`Rank: ${shardsTechCore.userGuild.metadata?.rank || '--'}`}
+									color="#52c41a"
+								/>
+							</Space>
 						</Space>
 					</Space>
-				</Space>
+					{shardsTechCore?.userGuild?.owner?._id === shardsTechCore?.userInfo?._id ? (
+						<Button type="default" icon={<UserAddOutlined />} onClick={() => setOpenModalInvite(true)}>
+							Invite Member
+						</Button>
+					) : null}
+				</div>
+				<div style={{ marginBottom: '12px', fontWeight: 500 }}>
+					Owner by{' '}
+					<span style={{ fontWeight: 700 }}>{shortAddress(shardsTechCore?.userGuild?.owner?.address)}</span>
+				</div>
 				<Typography.Paragraph type="secondary">
 					{shardsTechCore.userGuild.metadata?.description ? (
 						shardsTechCore.userGuild.metadata?.description
@@ -161,9 +226,21 @@ const MyGuild = () => {
 					className="mb-4"
 					title="Earning Distribution"
 					items={[
-						{ key: '1', label: 'Guild Master', children: '20%' },
-						{ key: '2', label: 'Seat Owners', children: '60%' },
-						{ key: '3', label: 'Fraction Owners', children: '20%' },
+						{
+							key: '1',
+							label: 'Guild Master',
+							children: `${earningDistribution.guildOwnerPercent}%`,
+						},
+						{
+							key: '2',
+							label: 'Seat Owners',
+							children: `${earningDistribution.memberPercent}%`,
+						},
+						{
+							key: '3',
+							label: 'Fraction Owners',
+							children: `${earningDistribution.sharePercent}%`,
+						},
 					]}
 				></Descriptions>
 			</div>
@@ -178,11 +255,20 @@ const MyGuild = () => {
 					icon={<TagTwoTone twoToneColor={'#f81d22'} />}
 					onClick={() => setOpenSellSlotModal(true)}
 				/>
-				<FloatButton
-					tooltip={<div>Change Owner</div>}
-					icon={<CrownTwoTone />}
-					onClick={() => setOpenChangeOwnerModal(true)}
-				/>
+				{shardsTechCore?.userGuild?.owner?._id === shardsTechCore?.userInfo?._id ? (
+					<>
+						<FloatButton
+							tooltip={<div>Change Owner</div>}
+							icon={<CrownTwoTone />}
+							onClick={() => setOpenChangeOwnerModal(true)}
+						/>
+						<FloatButton
+							tooltip={<div>Update Guild</div>}
+							icon={<FormOutlined style={{ color: '#52c41a' }} />}
+							onClick={() => setOpenUpdateForm(true)}
+						/>
+					</>
+				) : null}
 			</FloatButton.Group>
 			<Tabs
 				defaultActiveKey="1"
@@ -190,7 +276,7 @@ const MyGuild = () => {
 				items={[
 					{
 						key: '1',
-						label: 'Members',
+						label: `${shardsTechCore.userGuild?.users?.length} Member`,
 						children: shardsTechCore.userGuild?.users && (
 							<Table
 								columns={usersColumns}
@@ -249,10 +335,10 @@ const MyGuild = () => {
 				onCancel={() => setOpenChangeOwnerModal(false)}
 			>
 				<Form layout="vertical" autoComplete="off">
-					<Form.Item name="name" label="User ID">
+					<Form.Item name="name" label="Shards ID">
 						<Input
 							size="large"
-							placeholder="enter user id"
+							placeholder="Enter Shards ID"
 							onChange={(e) => setNewOwner(e.target.value)}
 							value={newOwner}
 						/>
@@ -278,6 +364,24 @@ const MyGuild = () => {
 					</Form.Item>
 				</Form>
 			</Modal>
+			<FormUpdateGuild
+				openHandleForm={openUpdateForm}
+				setOpenHandleForm={setOpenUpdateForm}
+				shardsTechCore={shardsTechCore}
+				data={{
+					guildName: shardsTechCore.userGuild.name,
+					slotPrice: shardsTechCore.userGuild?.slotPrice,
+					guildMaster: earningDistribution.guildOwnerPercent,
+					seatOwners: earningDistribution.memberPercent,
+					fractionOwners: earningDistribution.sharePercent,
+					requireJoinGuildRequest: shardsTechCore.userGuild?.requireJoinGuildRequest,
+				}}
+			/>
+			<ModalInvite
+				openHandleForm={openModalInvite}
+				setOpenHandleForm={setOpenModalInvite}
+				shardsTechCore={shardsTechCore}
+			/>
 		</>
 	);
 };
