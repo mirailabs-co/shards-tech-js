@@ -1,5 +1,4 @@
-'use client';
-import { Button, Space, Table, Tabs, Typography } from 'antd';
+import { Button, Input, Space, Spin, Table, Tabs, Typography } from 'antd';
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import { HomeContext } from '../context';
@@ -14,21 +13,33 @@ import TabChat from './_TabChat';
 export default function Main() {
 	const { shardsTechCore } = useContext(HomeContext);
 
-	const [deviceId, setDeviceId] = useState<any>('');
 	const [myShards, setMyShards] = useState<any>(null);
+
 	const [userOnlinesShards, setUserOnlinesShards] = useState<any>(null);
+
+	const [transactionHistoryOfUser, setTransactionHistoryOfUser] = useState<any>(null);
 	const [guildsUserHaveShare, setGuildsUserHaveShare] = useState<any>(null);
+	const [handleFormVisible, setHandleFormVisible] = useState<boolean>(false);
+
+	const [loading, setLoading] = useState<boolean>(true);
 
 	const connectShardsTech = async () => {
-		const data = await shardsTechCore.getMyFractions();
-		setMyShards(data);
+		try {
+			setLoading(true);
+			const data = await shardsTechCore.getMyFractions();
+			setMyShards(data);
 
-		const userOnlines = await shardsTechCore.getUserOnlineInGuild();
-		setUserOnlinesShards(userOnlines);
+			const userOnlines = await shardsTechCore.getUserOnlineInGuild();
+			setUserOnlinesShards(userOnlines);
 
-		const guildsUserHaveShare = await shardsTechCore.getMyFractions();
+			const guildsUserHaveShare = await shardsTechCore.getMyFractions();
 
-		setGuildsUserHaveShare(guildsUserHaveShare);
+			setGuildsUserHaveShare(guildsUserHaveShare);
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	const userHaveShareColumns = [
@@ -128,9 +139,34 @@ export default function Main() {
 		},
 	];
 
+	if (
+		shardsTechCore &&
+		!shardsTechCore?.userGuild?.hasOwnProperty('requireJoinGuildRequest') &&
+		shardsTechCore.gameConfig?.memberGuildConfig?.requireJoinGuildRequest === 'off'
+	) {
+		shardItems.splice(2, 1);
+	}
+
+	if (shardsTechCore?.userGuild?.requireJoinGuildRequest === false) {
+		shardItems.splice(2, 1);
+	}
+
 	return (
 		<main>
-			<Tabs defaultActiveKey="1" items={shardItems} />
+			{loading ? (
+				<div
+					style={{
+						height: 'calc(100vh - 96px)',
+						display: 'flex',
+						alignItems: 'center',
+						justifyItems: 'center',
+					}}
+				>
+					<Spin size="large" style={{ flex: 1 }} />
+				</div>
+			) : (
+				<Tabs defaultActiveKey="1" items={shardItems} />
+			)}
 		</main>
 	);
 }
