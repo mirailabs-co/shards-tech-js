@@ -323,6 +323,20 @@ class ShardsTechApi extends BaseHttpService {
 				},
 			);
 		},
+
+		rejectInvite: async (
+			accessToken: string,
+			guildId: string,
+			clientId: string,
+		): Promise<boolean> => {
+			return this.sendDelete<boolean>(
+				`v1/join-guild-request/reject-invite/${guildId}`,
+				{
+					'Authorization': `Bearer ${accessToken}`,
+					'x-client-id': clientId,
+				},
+			);
+		},
 	};
 
 	leaderBoardModule = {

@@ -349,6 +349,19 @@ export class MiraiCore extends Core {
 		}
 	}
 
+	public async rejectInvite(guildId: string) {
+		try {
+			const data = await this.INSTANCE.joinGuildRequestModule.rejectInvite(
+				this.accessToken,
+				guildId,
+				this.gameConfig.clientId,
+			);
+			return data;
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
 	// Guild Chat
 	public async getGuildChatHistory(query: GetHistoryChatDto) {
 		try {
