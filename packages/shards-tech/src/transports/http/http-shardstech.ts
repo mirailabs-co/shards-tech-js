@@ -331,6 +331,7 @@ class ShardsTechApi extends BaseHttpService {
 		): Promise<boolean> => {
 			return this.sendDelete<boolean>(
 				`v1/join-guild-request/reject-invite/${guildId}`,
+				{},
 				{
 					'Authorization': `Bearer ${accessToken}`,
 					'x-client-id': clientId,
