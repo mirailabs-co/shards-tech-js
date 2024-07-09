@@ -99,8 +99,16 @@ const LeaderBoards = () => {
 			return <span>Already Join Guild</span>;
 		}
 
-		if (!myJoinGuildRequest || !myJoinGuildRequest.length) {
+		if (
+			(shardsTechCore.gameConfig?.memberGuildConfig?.requireJoinGuildRequest === 'off' &&
+				!guild?.hasOwnProperty('requireJoinGuildRequest')) ||
+			(guild?.hasOwnProperty('requireJoinGuildRequest') && !guild?.requireJoinGuildRequest)
+		) {
 			return <span onClick={() => getSlotPrice(guild._id)}>Get Slot Price</span>;
+		}
+
+		if (!myJoinGuildRequest || !myJoinGuildRequest.length) {
+			return <span onClick={() => createJoinGuildRequest(guild._id)}>Join Guild</span>;
 		}
 
 		let status;
@@ -117,9 +125,9 @@ const LeaderBoards = () => {
 			case 'pending':
 				return <span>Join Request Pending</span>;
 			case 'rejected':
-				return <span>Join Request Rejected</span>;
+				return <span onClick={() => createJoinGuildRequest(guild._id)}>Join Guild</span>;
 			default:
-				return <span onClick={() => createJoinGuildRequest(guild._id)}>Requested</span>;
+				return <span onClick={() => createJoinGuildRequest(guild._id)}>Join Guild</span>;
 		}
 	};
 

@@ -97,8 +97,8 @@ export default function Main() {
 			children: <MyGuild />,
 		},
 		{
-			key: 'join-guild-request',
-			label: 'Join Guild Request',
+			key: 'join-guild',
+			label: 'Join Guild',
 			children: <JoinGuildRequest />,
 		},
 		{

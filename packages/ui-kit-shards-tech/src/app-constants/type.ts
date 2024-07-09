@@ -23,6 +23,9 @@ export type GuildType = {
 	userCount: number;
 	_id: string;
 	requireJoinGuildRequest?: boolean;
+	avatar?: string;
+	level?: number;
+	rank?: number;
 };
 
 export type GuildOwner = {
@@ -86,4 +89,12 @@ export type UpdateGuildType = {
 	seatOwners: number;
 	fractionOwners: number;
 	requireJoinGuildRequest: boolean;
+};
+
+export type GuildSlotType = {
+	clientId: string;
+	price: number;
+	seller: string;
+	_id: string;
+	guild: GuildType;
 };
