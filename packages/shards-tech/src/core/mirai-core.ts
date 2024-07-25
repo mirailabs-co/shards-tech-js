@@ -118,6 +118,7 @@ export class MiraiCore extends Core {
 			this.userGuild = data;
 			return data;
 		} catch (e) {
+			this.userGuild = null;
 			console.error(e);
 		}
 	}
