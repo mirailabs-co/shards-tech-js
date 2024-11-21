@@ -1,6 +1,6 @@
 {
 	"name": "@mirailabs-co/shards-tech",
-	"version": "2.0.4",
+	"version": "2.0.5",
 	"description": "Shards Tech SDK JavaScript",
 	"author": "",
 	"repository": "github:mirailabs-co/shards-tech-js",
@@ -27,7 +27,7 @@
 		"query-string": "^6.0.0",
 		"socket.io-client": "^4.7.2"
 	},
-	"gitHead": "f53d9579f9fac2376bce69e1ca30069418a9d638",
+	"gitHead": "9648b6ab98c7b08a333787368a03066c478362b6",
 	"publishConfig": {
 		"access": "public"
 	}
