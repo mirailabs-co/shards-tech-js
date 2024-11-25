@@ -1,3 +1,4 @@
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { Connection } from '../connection/connection';
 import { MiraiConnection } from '../connection/mirai-connection';
 import { UserType } from '../constants/types';
@@ -57,6 +58,11 @@ export class MiraiCore extends Core {
 			this.accessToken = accessToken;
 			this.emit('connecting');
 			const userInfo = await this.INSTANCE.usersModule.getUser(accessToken, this.clientId);
+
+			const fp = await FingerprintJS.load();
+			const result: any = await fp.get();
+
+			console.log('result :>> ', result);
 			this.userInfo = userInfo;
 			const newConnection = await MiraiConnection.init({
 				clientId: this.clientId,

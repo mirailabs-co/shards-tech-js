@@ -22,6 +22,7 @@
 		"build:umd": "mirai-scripts build"
 	},
 	"dependencies": {
+		"@fingerprintjs/fingerprintjs": "^4.5.1",
 		"eventemitter3": "^5.0.1",
 		"jwt-decode": "^3.1.2",
 		"query-string": "^6.0.0",

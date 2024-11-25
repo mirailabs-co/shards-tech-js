@@ -9,5 +9,9 @@
 		}
 	],
 	"prettier.configPath": "",
-	"cSpell.words": ["Mirai", "shardstech"]
+	"cSpell.words": [
+		"fingerprintjs",
+		"Mirai",
+		"shardstech"
+	]
 }
