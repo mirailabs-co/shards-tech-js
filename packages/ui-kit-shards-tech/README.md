@@ -1,1 +1,0 @@
-# Shards Tech Core Package

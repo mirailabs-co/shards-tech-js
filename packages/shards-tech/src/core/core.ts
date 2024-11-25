@@ -6,6 +6,10 @@ export type ICore = {
 	env?: string;
 };
 
+export type ConnectType = {
+	initData?: string;
+};
+
 export type CoreEventType =
 	| 'new_connection'
 	| 'connecting'
@@ -44,8 +48,7 @@ export abstract class Core extends EventEmitter<CoreEventType> {
 	abstract connection: Connection;
 
 	// CONNECTION
-	public abstract connect({ accessToken }: { accessToken: string }): Promise<
-	[Core, Connection]>;
+	public abstract connect(options?: ConnectType): Promise<[Core, Connection]>;
 	public abstract disconnect(connection: Connection): Promise<void>;
 }
 

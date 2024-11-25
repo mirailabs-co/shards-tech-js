@@ -6,7 +6,7 @@ class MiraiConnection extends Connection {
 	public topicId: string;
 	public wcTopicId: string;
 
-	private guildServerUrl: string = 'https://api-dev.shards.tech';
+	private guildServerUrl: string = 'https://api-telegram-app-dev.shards.tech/';
 
 	private pending = false;
 	private initializing = false;
@@ -26,7 +26,7 @@ class MiraiConnection extends Connection {
 		const env = opts.env;
 
 		if (env === 'production') {
-			this.guildServerUrl = 'https://api.shards.tech';
+			this.guildServerUrl = 'https://api-telegram-app.shards.tech/';
 		}
 	}
 
@@ -107,7 +107,7 @@ class MiraiConnection extends Connection {
 		}
 	}
 
-	public async connect({ accessToken, clientId }: { accessToken: string, clientId: string }): Promise<boolean> {
+	public async connect({ accessToken, clientId }: { accessToken: string; clientId: string }): Promise<boolean> {
 		return new Promise(async (resolve, reject) => {
 			try {
 				if (!this.ws || this.ws === undefined) {
@@ -157,7 +157,6 @@ class MiraiConnection extends Connection {
 			try {
 				this.isDisconnecting = true;
 				if (this.ws.socket.getSocket().connected) {
-
 					if (this.ws.socket.disconnect()) {
 						this.emit('disconnected', {
 							reconnect: false,
