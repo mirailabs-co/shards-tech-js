@@ -6,7 +6,7 @@ class MiraiConnection extends Connection {
 	public topicId: string;
 	public wcTopicId: string;
 
-	private guildServerUrl: string = 'https://api-telegram-app-dev.shards.tech/';
+	private serverURL: string = 'https://api-telegram-app-dev.shards.tech/';
 
 	private pending = false;
 	private initializing = false;
@@ -26,7 +26,7 @@ class MiraiConnection extends Connection {
 		const env = opts.env;
 
 		if (env === 'production') {
-			this.guildServerUrl = 'https://api-telegram-app.shards.tech/';
+			this.serverURL = 'https://api-telegram-app.shards.tech/';
 		}
 	}
 
@@ -93,7 +93,7 @@ class MiraiConnection extends Connection {
 			this.initializing = true;
 
 			this.ws = new SignerWebSocketService({
-				url: this.guildServerUrl,
+				url: this.serverURL,
 				accessToken,
 				clientId,
 			});

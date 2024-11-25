@@ -1,5 +1,6 @@
 import { Connection } from '../connection/connection';
 import { MiraiConnection } from '../connection/mirai-connection';
+import { UserType } from '../constants/types';
 import { NoAccessToken, SDKError } from '../errors';
 import { ShardsTechApi } from '../transports/http/http-shardstech';
 import { ConnectType, Core, ICore } from './core';
@@ -7,6 +8,8 @@ import { ConnectType, Core, ICore } from './core';
 export class MiraiCore extends Core {
 	connection: MiraiConnection;
 	initData: string;
+	accessToken: string;
+	userInfo: UserType;
 	INSTANCE: ShardsTechApi;
 
 	constructor(opts?: ICore) {
@@ -45,19 +48,16 @@ export class MiraiCore extends Core {
 
 			this.initData = initData;
 
-			console.log('initData :>> ', initData);
 			this.INSTANCE = new ShardsTechApi(this.env);
 			const authToken = await this.INSTANCE.authModule.login(initData);
 
 			console.log('authToken :>> ', authToken);
+			const { accessToken } = authToken || {};
 
-			// this.initData
-			// call /login
-			// this.accessToken = accessToken;
-			// this.gameConfig = gameConfig;
-			// this.emit('connecting');
-			// const userInfo = await this.INSTANCE.usersModule.getUser(accessToken, this.clientId);
-			// this.userInfo = userInfo;
+			this.accessToken = accessToken;
+			this.emit('connecting');
+			const userInfo = await this.INSTANCE.usersModule.getUser(accessToken, this.clientId);
+			this.userInfo = userInfo;
 			const newConnection = await MiraiConnection.init({
 				clientId: this.clientId,
 				env: this.env,

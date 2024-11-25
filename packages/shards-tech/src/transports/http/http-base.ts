@@ -39,7 +39,7 @@ export abstract class BaseHttpService {
 		console.debug('[HTTP] GET: ', path);
 
 		if (response.status === 200 || response.status === 201) {
-			return response.data as T;
+			return response.data?.data as T;
 		}
 
 		throw new HttpConnectionError(response?.data?.errorCode, response.data?.message);
@@ -64,7 +64,7 @@ export abstract class BaseHttpService {
 		console.debug('[HTTP] POST: ', path);
 
 		if (response.status === 200 || response.status === 201) {
-			return response.data as T;
+			return response.data?.data as T;
 		}
 
 		const message = response?.data?.message || response.statusText;
@@ -90,7 +90,7 @@ export abstract class BaseHttpService {
 		console.debug('[HTTP] DELETE: ', path);
 
 		if (response.status === 200 || response.status === 201) {
-			return response.data as T;
+			return response.data?.data as T;
 		}
 
 		const message = response?.data?.message || response.statusText;
@@ -116,7 +116,7 @@ export abstract class BaseHttpService {
 		console.debug('[HTTP] PUT: ', path);
 
 		if (response.status === 200 || response.status === 201) {
-			return response.data as T;
+			return response.data?.data as T;
 		}
 
 		const message = response?.data?.message || response.statusText;
