@@ -1,8 +1,8 @@
 import { AuthTokenType, UserType } from '../../constants/types';
 import { BaseHttpService } from './http-base';
 
-class ShardsTechApi extends BaseHttpService {
-	public static readonly INSTANCE = new ShardsTechApi();
+class ShardsDSPService extends BaseHttpService {
+	public static readonly INSTANCE = new ShardsDSPService();
 
 	constructor(env = 'development') {
 		const SERVER_URL =
@@ -30,4 +30,4 @@ class ShardsTechApi extends BaseHttpService {
 	};
 }
 
-export { ShardsTechApi };
+export { ShardsDSPService };

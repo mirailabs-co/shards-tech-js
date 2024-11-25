@@ -1,1 +1,1 @@
-# Shards Tech Core Package
+# SHARDS DSP SDK Package

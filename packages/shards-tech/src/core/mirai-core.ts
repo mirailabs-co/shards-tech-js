@@ -2,7 +2,7 @@ import { Connection } from '../connection/connection';
 import { MiraiConnection } from '../connection/mirai-connection';
 import { UserType } from '../constants/types';
 import { NoAccessToken, SDKError } from '../errors';
-import { ShardsTechApi } from '../transports/http/http-shardstech';
+import { ShardsDSPService } from '../transports/http/http-dsp';
 import { ConnectType, Core, ICore } from './core';
 
 export class MiraiCore extends Core {
@@ -10,7 +10,7 @@ export class MiraiCore extends Core {
 	initData: string;
 	accessToken: string;
 	userInfo: UserType;
-	INSTANCE: ShardsTechApi;
+	INSTANCE: ShardsDSPService;
 
 	constructor(opts?: ICore) {
 		super(opts);
@@ -48,7 +48,7 @@ export class MiraiCore extends Core {
 
 			this.initData = initData;
 
-			this.INSTANCE = new ShardsTechApi(this.env);
+			this.INSTANCE = new ShardsDSPService(this.env);
 			const authToken = await this.INSTANCE.authModule.login(initData);
 
 			console.log('authToken :>> ', authToken);
