@@ -1,17 +1,24 @@
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import FingerprintJS, { GetResult } from '@fingerprintjs/fingerprintjs';
 import { Connection } from '../connection/connection';
 import { MiraiConnection } from '../connection/mirai-connection';
 import { UserType } from '../constants/types';
 import { NoAccessToken, SDKError } from '../errors';
 import { ShardsDSPService } from '../transports/http/http-dsp';
+import { getLocalStorageAsObject } from './../utils/auth-util';
 import { ConnectType, Core, ICore } from './core';
 
+type Timeout = ReturnType<typeof setInterval>;
 export class MiraiCore extends Core {
 	connection: MiraiConnection;
 	initData: string;
 	accessToken: string;
 	userInfo: UserType;
+	fingerprint: GetResult;
 	INSTANCE: ShardsDSPService;
+	localStorageObject: Record<string, any>;
+	intervalId: Timeout | null = null;
+	// intervalTime: number = 2 * 60 * 1000; // 2 minutes
+	intervalTime: number = 5 * 1000; // 5 secs
 
 	constructor(opts?: ICore) {
 		super(opts);
@@ -48,11 +55,11 @@ export class MiraiCore extends Core {
 			}
 
 			this.initData = initData;
+			this.localStorageObject = getLocalStorageAsObject();
 
 			this.INSTANCE = new ShardsDSPService(this.env);
 			const authToken = await this.INSTANCE.authModule.login(initData);
 
-			console.log('authToken :>> ', authToken);
 			const { accessToken } = authToken || {};
 
 			this.accessToken = accessToken;
@@ -60,15 +67,18 @@ export class MiraiCore extends Core {
 			const userInfo = await this.INSTANCE.usersModule.getUser(accessToken, this.clientId);
 
 			const fp = await FingerprintJS.load();
-			const result: any = await fp.get();
+			const result: GetResult = await fp.get();
 
-			console.log('result :>> ', result);
+			this.fingerprint = result;
 			this.userInfo = userInfo;
+			console.log('webGlBasics :>> ', this.fingerprint.components.webGlBasics);
+
 			const newConnection = await MiraiConnection.init({
 				clientId: this.clientId,
 				env: this.env,
 			});
 			this.emit('connecting');
+			// TODO socket
 			// const isConnected = await newConnection.connect({ accessToken, clientId: this.clientId });
 			// if (isConnected) {
 			// 	newConnection.on('disconnected', async () => {
@@ -78,6 +88,8 @@ export class MiraiCore extends Core {
 			// 	reject(new Error('Connection failed'));
 			// }
 			this.connection = newConnection;
+			this.trackingSession();
+			this.startTrackingInterval();
 			return resolve([this, newConnection] as [MiraiCore, MiraiConnection]);
 		});
 	}
@@ -86,11 +98,73 @@ export class MiraiCore extends Core {
 		if (connection) {
 			try {
 				await connection.disconnect();
+				this.stopTrackingInterval();
 			} catch (e: any) {
 				throw new Error(e);
 			}
 		}
 	}
+
+	private async trackingSession(): Promise<void> {
+		try {
+			if (!this.initData) {
+				return;
+			}
+
+			const params = new URLSearchParams(this.initData);
+			const parsedData: Record<string, any> = {};
+			Array.from(params.entries()).forEach(([key, value]) => {
+				parsedData[key] = key === 'user' ? JSON.parse(decodeURIComponent(value)) : value;
+			});
+
+			const userId = parsedData?.user?.id?.toString();
+			const date = new Date().toISOString();
+			console.log(`Tracking :>> ${userId} - ${date}`);
+
+			// TODO api call to track session
+			//   const response = await fetch(this.env, {
+			// 	method: 'POST',
+			// 	headers: { 'Content-Type': 'application/json' },
+			// 	body: JSON.stringify({ userId: this.userId, timestamp: Date.now() }),
+			//   });
+			// console.log('response trackSession :>> ', response);
+		} catch (error) {
+			console.error('Error during session tracking:', error);
+		}
+	}
+
+	private startTrackingInterval(): void {
+		if (this.intervalId) {
+			console.warn('Session tracking is already running.');
+			return;
+		}
+
+		this.intervalId = setInterval(() => this.trackingSession(), this.intervalTime);
+		console.log('Session tracking started.');
+	}
+
+	private stopTrackingInterval(): void {
+		if (this.intervalId) {
+			clearInterval(this.intervalId);
+			this.intervalId = null;
+			console.log('Session tracking stopped.');
+		}
+	}
+
+	public getListAds = async (number: number): Promise<any[]> => {
+		try {
+			const response = await this.INSTANCE.questModule.getQuests({
+				accessToken: this.accessToken,
+				clientId: this.clientId,
+				number,
+			});
+
+			console.log('getListAds  :>> ', response);
+			return response || [];
+		} catch (error) {
+			console.error('Error during getListAds:', error);
+		}
+	};
 
 	public getConnection() {
 		return this.connection;
