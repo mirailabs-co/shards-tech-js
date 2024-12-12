@@ -1,6 +1,6 @@
 {
 	"name": "@mirailabs-co/shards-tech",
-	"version": "2.2.0",
+	"version": "2.2.24",
 	"description": "Shards DSP SDK JavaScript",
 	"author": "",
 	"repository": "github:mirailabs-co/shards-tech-js",
@@ -28,7 +28,7 @@
 		"query-string": "^6.0.0",
 		"socket.io-client": "^4.7.2"
 	},
-	"gitHead": "fc513ef3397c61ecffbb1f65509cd922c8716619",
+	"gitHead": "dee15424688e2276e22e4ddf50b938d9c49734fa",
 	"publishConfig": {
 		"access": "public"
 	}
