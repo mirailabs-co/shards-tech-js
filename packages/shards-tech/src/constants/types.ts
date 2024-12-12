@@ -53,3 +53,18 @@ export type TwitterUser = {
 		username: string;
 	};
 };
+
+export type LoginParams = {
+	telegramInitData: string;
+	appId: string;
+};
+
+export type AuthParams<T = {}> = T & {
+	accessToken: string;
+	clientId: string;
+};
+
+export type UserAttribute = {
+	key: string;
+	value: string;
+};

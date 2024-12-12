@@ -6,7 +6,7 @@ class MiraiConnection extends Connection {
 	public topicId: string;
 	public wcTopicId: string;
 
-	private serverURL: string = 'https://api-telegram-app-dev.shards.tech/';
+	private serverURL: string = 'https://api-adx-dev.shards.tech/';
 
 	private pending = false;
 	private initializing = false;
@@ -26,7 +26,7 @@ class MiraiConnection extends Connection {
 		const env = opts.env;
 
 		if (env === 'production') {
-			this.serverURL = 'https://api-telegram-app.shards.tech/';
+			this.serverURL = 'https://api-adx.shards.tech/';
 		}
 	}
 

@@ -69,5 +69,8 @@
 	},
 	"publishConfig": {
 		"registry": "https://npm.pkg.github.com"
+	},
+	"dependencies": {
+		"@twa-dev/types": "^8.0.1"
 	}
 }

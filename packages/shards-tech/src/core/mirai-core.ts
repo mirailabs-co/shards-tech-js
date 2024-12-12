@@ -1,18 +1,19 @@
 import FingerprintJS, { GetResult } from '@fingerprintjs/fingerprintjs';
 import { Connection } from '../connection/connection';
 import { MiraiConnection } from '../connection/mirai-connection';
-import { UserType } from '../constants/types';
+import { LoginParams, UserType } from '../constants/types';
 import { NoAccessToken, SDKError } from '../errors';
 import { ShardsDSPService } from '../transports/http/http-dsp';
 import { getLocalStorageAsObject } from './../utils/auth-util';
 import { ConnectType, Core, ICore } from './core';
+import { WebAppInitData } from '@twa-dev/types';
 
 type Timeout = ReturnType<typeof setInterval>;
 export class MiraiCore extends Core {
 	connection: MiraiConnection;
 	initData: string;
 	accessToken: string;
-	userInfo: UserType;
+	userInfo: WebAppInitData;
 	fingerprint: GetResult;
 	INSTANCE: ShardsDSPService;
 	localStorageObject: Record<string, any>;
@@ -49,28 +50,45 @@ export class MiraiCore extends Core {
 		const { initData: initDataProps } = options || {};
 
 		return new Promise(async (resolve, reject) => {
+			window.Telegram;
+
 			const initData = window?.Telegram?.WebApp?.initData || initDataProps;
 			if (!initData) {
 				reject(new NoAccessToken(SDKError.NoConnection, 'Not found initData.'));
 			}
+			const paramsInitData = new URLSearchParams(initData);
+			const parsedInitData: WebAppInitData & Record<string, any> = {
+				auth_date: 0,
+				hash: '',
+				signature: '',
+			};
+			Array.from(paramsInitData.entries()).forEach(([key, value]) => {
+				parsedInitData[key] = key === 'user' ? JSON.parse(decodeURIComponent(value)) : value;
+			});
 
+			console.log('parsedInitData :>> ', parsedInitData);
+
+			this.userInfo = parsedInitData;
 			this.initData = initData;
 			this.localStorageObject = getLocalStorageAsObject();
+			const loginParams: LoginParams = {
+				telegramInitData: initData,
+				appId: this.clientId,
+			};
 
 			this.INSTANCE = new ShardsDSPService(this.env);
-			const authToken = await this.INSTANCE.authModule.login(initData);
+			const authToken = await this.INSTANCE.authModule.login(loginParams);
 
 			const { accessToken } = authToken || {};
-
 			this.accessToken = accessToken;
 			this.emit('connecting');
-			const userInfo = await this.INSTANCE.usersModule.getUser(accessToken, this.clientId);
+			// const userInfo = await this.INSTANCE.usersModule.getUser({ accessToken, clientId: this.clientId });
 
 			const fp = await FingerprintJS.load();
 			const result: GetResult = await fp.get();
 
 			this.fingerprint = result;
-			this.userInfo = userInfo;
+			// this.userInfo = userInfo;
 			console.log('webGlBasics :>> ', this.fingerprint.components.webGlBasics);
 
 			const newConnection = await MiraiConnection.init({

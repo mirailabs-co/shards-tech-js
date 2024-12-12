@@ -1,4 +1,4 @@
-import { AuthTokenType, UserType } from '../../constants/types';
+import { AuthParams, AuthTokenType, LoginParams, UserAttribute, UserType } from '../../constants/types';
 import { sleep } from '../../utils/auth-util';
 import { BaseHttpService } from './http-base';
 
@@ -6,34 +6,47 @@ class ShardsDSPService extends BaseHttpService {
 	public static readonly INSTANCE = new ShardsDSPService();
 
 	constructor(env = 'development') {
-		const SERVER_URL =
-			env === 'production' ? 'https://api-telegram-app.shards.tech' : 'https://api-telegram-app-dev.shards.tech';
+		const SERVER_URL = env === 'production' ? 'https://api-adx.shards.tech' : 'https://api-adx-dev.shards.tech';
 		super(SERVER_URL);
 	}
 
 	authModule = {
-		login: async (telegramInitData: string): Promise<AuthTokenType> => {
-			return this.sendPost('v1/auth/login', { telegramInitData });
+		login: async (params: LoginParams): Promise<AuthTokenType> => {
+			return this.sendPost('v1/auth/login', params);
+		},
+
+		refreshToken: async (params: AuthParams): Promise<AuthTokenType> => {
+			return this.sendPost(
+				'v1/auth/refresh-token',
+				{ refreshToken: params?.accessToken },
+				{
+					'Authorization': `Bearer ${params?.accessToken}`,
+					'x-client-id': params?.clientId,
+				},
+			);
 		},
 	};
 
 	questModule = {
-		getQuests: async ({ number }: { accessToken: string; clientId: string; number: number }): Promise<any> => {
+		getQuests: async (params: AuthParams<{ number: number }>): Promise<any> => {
 			await sleep(1000);
-			return FAKE_DATA_QUESTS.slice(0, number);
+			return FAKE_DATA_QUESTS.slice(0, params?.number);
 		},
 	};
 
 	usersModule = {
-		getUser: async (accessToken: string, clientId: string): Promise<UserType> => {
-			return this.sendGet(
-				'v1/users',
-				{},
-				{
-					'Authorization': `Bearer ${accessToken}`,
-					'x-client-id': clientId,
-				},
-			);
+		createUserAttributes: async (params: AuthParams<{ attributes: UserAttribute }>): Promise<any> => {
+			return this.sendPost('v1/users/attributes', params?.attributes, {
+				'Authorization': `Bearer ${params?.accessToken}`,
+				'x-client-id': params?.clientId,
+			});
+		},
+
+		updateUserAttributes: async (params: AuthParams<{ attributes: UserAttribute }>): Promise<any> => {
+			return this.sendPut('v1/users/attributes/create-user-attribute', params?.attributes, {
+				'Authorization': `Bearer ${params?.accessToken}`,
+				'x-client-id': params?.clientId,
+			});
 		},
 	};
 }
