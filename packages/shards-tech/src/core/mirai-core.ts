@@ -6,6 +6,7 @@ import { NoAccessToken, SDKError } from '../errors';
 import { ShardsDSPService } from '../transports/http/http-dsp';
 import { getLocalStorageAsObject } from './../utils/auth-util';
 import { ConnectType, Core, ICore } from './core';
+import Cookies from 'js-cookie';
 
 type Timeout = ReturnType<typeof setInterval>;
 export class MiraiCore extends Core {
@@ -55,8 +56,6 @@ export class MiraiCore extends Core {
 		const { initData: initDataProps } = options || {};
 
 		return new Promise(async (resolve, reject) => {
-			this.INSTANCE = new ShardsDSPService(this.env);
-
 			const initData = window?.Telegram?.WebApp?.initData || initDataProps;
 			if (!initData) {
 				reject(new NoAccessToken(SDKError.NoConnection, 'Not found initData.'));
@@ -79,7 +78,11 @@ export class MiraiCore extends Core {
 				appId: this.clientId,
 			};
 
+			this.INSTANCE = new ShardsDSPService(this.env);
 			const authToken = await this.INSTANCE.authModule.login(loginParams);
+
+			Cookies.set('accessToken', authToken?.accessToken);
+			Cookies.set('refreshToken', authToken?.refreshToken);
 
 			const { accessToken } = authToken || {};
 			this.accessToken = accessToken;
