@@ -24,6 +24,7 @@
 	"dependencies": {
 		"@fingerprintjs/fingerprintjs": "^4.5.1",
 		"eventemitter3": "^5.0.1",
+		"js-cookie": "^3.0.5",
 		"jwt-decode": "^3.1.2",
 		"query-string": "^6.0.0",
 		"socket.io-client": "^4.7.2"
@@ -31,5 +32,8 @@
 	"gitHead": "dee15424688e2276e22e4ddf50b938d9c49734fa",
 	"publishConfig": {
 		"access": "public"
+	},
+	"devDependencies": {
+		"@types/js-cookie": "^3.0.6"
 	}
 }
