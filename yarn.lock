@@ -2784,11 +2784,6 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/recommended/-/recommended-1.0.6.tgz#217b78f9601215939d566a79d202a760ae185114"
   integrity sha512-0IKu9GHYF1NGTJiYgfWwqnOQSlnE9V9R7YohHNNf0/fj/SyOZWzdd06JFr0fLpg1Mqw0kGbYg8w5xdkSqLKM9g==
 
-"@twa-dev/types@^8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@twa-dev/types/-/types-8.0.1.tgz#6a9d08b97f0acfa1bf00e0bc9083253eddb1a236"
-  integrity sha512-/m3KiULhI4fdeoI5K9Op9jFbmdPjxaAdrZBJ3BA1fS4lVmKCx9XuLTeumzYeuOW577eHAJWaZkcSpWBOss4Epw==
-
 "@types/babel__core@^7.1.14":
   version "7.20.5"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.20.5.tgz#3df15f27ba85319caa07ba08d0721889bb39c017"

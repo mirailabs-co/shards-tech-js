@@ -68,3 +68,62 @@ export type UserAttribute = {
 	key: string;
 	value: string;
 };
+
+export type AdType = {
+	app: string;
+	adId: string;
+	_id: string;
+	title: string;
+	description: string;
+	status: string;
+	url: string;
+	campaign: string;
+	weight: number;
+	updatedAt: string;
+	attributes: UserAttribute[];
+	__v: number;
+};
+
+export type ListAdsType = {
+	ad: AdType;
+	matchScore: number;
+}[];
+
+export type CreateAdParams = {
+	adId: string;
+	app: string;
+	title: string;
+	description: string;
+	url: string;
+	campaign: string;
+	weight: number;
+	attributes: UserAttribute[];
+};
+
+export type DoAdResponse = {
+	actionHistory: {
+		_id: string;
+		user: string;
+		ad: string;
+		app: string;
+		type: string;
+		status: string;
+	};
+	clickHistory: {
+		_id: string;
+		user: string;
+		ad: string;
+		app: string;
+		type: string;
+		status: string;
+	};
+};
+
+export type CreateEventParams = {
+	type: string;
+	status: string;
+	advertiser: string;
+	data?: {
+		[key: string]: any;
+	};
+};

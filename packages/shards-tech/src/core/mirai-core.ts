@@ -1,12 +1,11 @@
 import FingerprintJS, { GetResult } from '@fingerprintjs/fingerprintjs';
 import { Connection } from '../connection/connection';
 import { MiraiConnection } from '../connection/mirai-connection';
-import { LoginParams, UserType } from '../constants/types';
+import { AdType, CreateAdParams, CreateEventParams, ListAdsType, LoginParams, UserType } from '../constants/types';
 import { NoAccessToken, SDKError } from '../errors';
 import { ShardsDSPService } from '../transports/http/http-dsp';
 import { getLocalStorageAsObject } from './../utils/auth-util';
 import { ConnectType, Core, ICore } from './core';
-import { WebAppInitData } from '@twa-dev/types';
 
 type Timeout = ReturnType<typeof setInterval>;
 export class MiraiCore extends Core {
@@ -18,8 +17,9 @@ export class MiraiCore extends Core {
 	INSTANCE: ShardsDSPService;
 	localStorageObject: Record<string, any>;
 	intervalId: Timeout | null = null;
-	// intervalTime: number = 2 * 60 * 1000; // 2 minutes
-	intervalTime: number = 5 * 1000; // 5 secs
+	intervalTime: number = 2 * 60 * 1000; // 2 minutes
+	advertiserId: string;
+	// intervalTime: number = 5 * 1000; // 5 secs
 
 	constructor(opts?: ICore) {
 		super(opts);
@@ -46,11 +46,16 @@ export class MiraiCore extends Core {
 		});
 	}
 
+	public async connectAdvertiser(advertiserId: string) {
+		this.advertiserId = advertiserId;
+		return advertiserId;
+	}
+
 	public async connect(options?: ConnectType): Promise<[MiraiCore, MiraiConnection]> {
 		const { initData: initDataProps } = options || {};
 
 		return new Promise(async (resolve, reject) => {
-			window.Telegram;
+			this.INSTANCE = new ShardsDSPService(this.env);
 
 			const initData = window?.Telegram?.WebApp?.initData || initDataProps;
 			if (!initData) {
@@ -66,8 +71,6 @@ export class MiraiCore extends Core {
 				parsedInitData[key] = key === 'user' ? JSON.parse(decodeURIComponent(value)) : value;
 			});
 
-			console.log('parsedInitData :>> ', parsedInitData);
-
 			this.userInfo = parsedInitData;
 			this.initData = initData;
 			this.localStorageObject = getLocalStorageAsObject();
@@ -76,7 +79,6 @@ export class MiraiCore extends Core {
 				appId: this.clientId,
 			};
 
-			this.INSTANCE = new ShardsDSPService(this.env);
 			const authToken = await this.INSTANCE.authModule.login(loginParams);
 
 			const { accessToken } = authToken || {};
@@ -89,7 +91,7 @@ export class MiraiCore extends Core {
 
 			this.fingerprint = result;
 			// this.userInfo = userInfo;
-			console.log('webGlBasics :>> ', this.fingerprint.components.webGlBasics);
+			// console.log('webGlBasics :>> ', this.fingerprint.components.webGlBasics);
 
 			const newConnection = await MiraiConnection.init({
 				clientId: this.clientId,
@@ -106,8 +108,11 @@ export class MiraiCore extends Core {
 			// 	reject(new Error('Connection failed'));
 			// }
 			this.connection = newConnection;
-			this.trackingSession();
-			this.startTrackingInterval();
+
+			// TODO tracking session
+			// this.trackingSession();
+			// this.startTrackingInterval();
+			console.log('SDK Connected');
 			return resolve([this, newConnection] as [MiraiCore, MiraiConnection]);
 		});
 	}
@@ -121,6 +126,74 @@ export class MiraiCore extends Core {
 				throw new Error(e);
 			}
 		}
+	}
+
+	public async getListAds(limit: number, getAll: boolean = false): Promise<ListAdsType> {
+		try {
+			const response = await this.INSTANCE.adModule.getAds(this.accessToken, this.clientId, 50);
+			console.log(`Get ${limit} Ads for user @${this.userInfo?.user?.username}`);
+
+			return (getAll ? response : response?.filter((ad) => ad?.matchScore).slice(0, limit)) || [];
+		} catch (error) {
+			console.error('Error during getListAds:', error);
+		}
+	}
+
+	public async doAd(ad: AdType) {
+		try {
+			if (!ad) {
+				throw new Error('Ad is required');
+			}
+
+			const response = await this.INSTANCE.adModule.actionDoAd(this.accessToken, this.clientId, {
+				ad: ad._id,
+				app: this.clientId,
+			});
+			console.log('User Click Ad :>> ', ad);
+
+			return response;
+		} catch (error) {
+			console.error('Error during doAd:', error);
+		}
+	}
+
+	public async requestAd(ad: AdType) {
+		try {
+			if (!ad || !this.clientId) {
+				throw new Error('Ad and clientId is required');
+			}
+
+			const params = {
+				adId: ad._id,
+				app: this.clientId,
+				title: ad.title,
+				description: ad.description,
+				url: ad.url,
+				campaign: ad.campaign,
+				weight: ad.weight,
+				attributes: ad.attributes,
+			};
+
+			const response = await this.INSTANCE.adModule.createAd(params);
+			console.log('Request Ad :>> ', ad);
+			return response || [];
+		} catch (error) {
+			console.error('Error during createAd:', error);
+		}
+	}
+
+	public async createEvent(params: CreateEventParams) {
+		try {
+			const response = await this.INSTANCE.eventModule.createEvent(params);
+			console.log('SDK Create Event :>> ', params);
+			return response;
+		} catch (error) {
+			console.error('Error during createEvent:', error);
+		}
+	}
+
+	public getConnection() {
+		return this.connection;
 	}
 
 	private async trackingSession(): Promise<void> {
@@ -137,7 +210,7 @@ export class MiraiCore extends Core {
 
 			const userId = parsedData?.user?.id?.toString();
 			const date = new Date().toISOString();
-			console.log(`Tracking :>> ${userId} - ${date}`);
+			console.log(`Tracking Session :>> ${userId} - ${date}`);
 
 			// TODO api call to track session
 			//   const response = await fetch(this.env, {
@@ -169,27 +242,9 @@ export class MiraiCore extends Core {
 		}
 	}
 
-	public getListAds = async (number: number): Promise<any[]> => {
-		try {
-			const response = await this.INSTANCE.questModule.getQuests({
-				accessToken: this.accessToken,
-				clientId: this.clientId,
-				number,
-			});
-
-			console.log('getListAds  :>> ', response);
-			return response || [];
-		} catch (error) {
-			console.error('Error during getListAds:', error);
-		}
-	};
-
-	public getConnection() {
-		return this.connection;
-	}
-
 	async initialize() {
 		try {
+			this.INSTANCE = new ShardsDSPService(this.env);
 			this.connection = null;
 		} catch (e) {
 			console.error(e);
