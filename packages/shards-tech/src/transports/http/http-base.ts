@@ -31,6 +31,7 @@ export abstract class BaseHttpService {
 		const config: AxiosRequestConfig = {
 			method: 'GET',
 			url: apiUrl.toString(),
+			withCredentials: true,
 		};
 
 		await this.setHeaders(config, headers);
@@ -56,6 +57,7 @@ export abstract class BaseHttpService {
 			baseURL: this.apiUrl,
 			url: path,
 			validateStatus: () => true,
+			withCredentials: true,
 		};
 
 		await this.setHeaders(config, headers);
@@ -108,6 +110,7 @@ export abstract class BaseHttpService {
 			baseURL: this.apiUrl,
 			url: path,
 			validateStatus: () => true,
+			withCredentials: true,
 		};
 
 		await this.setHeaders(config, headers);

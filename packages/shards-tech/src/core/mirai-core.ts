@@ -81,12 +81,17 @@ export class MiraiCore extends Core {
 			this.INSTANCE = new ShardsDSPService(this.env);
 			const authToken = await this.INSTANCE.authModule.login(loginParams);
 
-			Cookies.set('accessToken', authToken?.accessToken, {
-				domain: 'https://api-adx-dev.shards.tech',
-			});
-			Cookies.set('refreshToken', authToken?.refreshToken, {
-				domain: 'https://api-adx-dev.shards.tech',
-			});
+			// console.log('Cookies.set 11111:>> ');
+			// Cookies.set('accessToken', authToken?.accessToken);
+			// Cookies.set('refreshToken', authToken?.refreshToken);
+
+			// console.log('Cookies.set2 22222 :>> ');
+			// Cookies.set('accessToken', authToken?.accessToken, {
+			// 	domain: 'api-adx-dev.shards.tech',
+			// });
+			// Cookies.set('refreshToken', authToken?.refreshToken, {
+			// 	domain: 'api-adx-dev.shards.tech',
+			// });
 
 			const { accessToken } = authToken || {};
 			this.accessToken = accessToken;
