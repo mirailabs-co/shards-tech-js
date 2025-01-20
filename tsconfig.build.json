@@ -1,7 +1,6 @@
 {
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
-		"module": "UMD",
 		"target": "ES2018",
 		"baseUrl": ".",
 		"outDir": "dist",

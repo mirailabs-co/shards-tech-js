@@ -9,7 +9,6 @@ function generateWebpackConfig({
 	fallback,
 	ssrModule = null,
 	pkgBaseConfig = {},
-	umdConfig = {},
 	cjsConfig = {},
 }) {
 	const baseConfig = {
@@ -20,10 +19,6 @@ function generateWebpackConfig({
 	};
 
 	const config = { baseConfig };
-	config.umdConfig = {
-		module,
-		...umdConfig,
-	};
 
 	config.cjsConfig = {
 		module: ssrModule || module,

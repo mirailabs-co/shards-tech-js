@@ -1,7 +1,7 @@
 // import { MiraiConnector as Connector } from './connectors/mirai-connector';
 export { MiraiConnection as Connection } from './connection/mirai-connection';
 export { MiraiCore as ShardsDSPCore } from './core/mirai-core';
-
+export { AdShardTech } from './core/AdShardTech';
 export { IConnection } from './connection/connection';
 export * from './errors';
 
