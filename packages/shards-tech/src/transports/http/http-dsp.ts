@@ -1,4 +1,5 @@
 import {
+    AdsType,
 	AuthTokenType,
 	CreateAdParams,
 	CreateEventParams,
@@ -48,6 +49,14 @@ class ShardsDSPService extends BaseHttpService {
 			);
 		},
 
+		getAdsByAdsBlock: async (accessToken: string, clientId: string, adsBlockId: string, limit: number): Promise<AdsType[]> => {
+			return this.sendGet(`v1/ads/ads-block/${adsBlockId}/${limit}`, {}, {
+					'Authorization': `Bearer ${accessToken}`,
+					'x-client-id': clientId,
+				},
+			);
+		},
+
 		createAd: async (params: CreateAdParams) => {
 			return this.sendPost('v1/ads', params, {
 				'api-key': ADMIN_API_KEY,
@@ -57,9 +66,20 @@ class ShardsDSPService extends BaseHttpService {
 		actionDoAd: async (
 			accessToken: string,
 			clientId: string,
-			params: { ad: string; app: string },
+			params: { ad: string; adsBlockId: string; campaignId: string },
 		): Promise<DoAdResponse> => {
 			return this.sendPost('v1/history/user-do-ad', params, {
+				'Authorization': `Bearer ${accessToken}`,
+				'x-client-id': clientId,
+			});
+		},
+
+		actionViewAd: async (
+			accessToken: string,
+			clientId: string,
+			params: { ad: string; adsBlockId: string; campaignId: string },
+		): Promise<boolean> => {
+			return this.sendPost('v1/history/user-view-ad', params, {
 				'Authorization': `Bearer ${accessToken}`,
 				'x-client-id': clientId,
 			});

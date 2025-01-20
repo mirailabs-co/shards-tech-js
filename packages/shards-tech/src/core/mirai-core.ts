@@ -1,7 +1,7 @@
 import FingerprintJS, { GetResult } from '@fingerprintjs/fingerprintjs';
 import { Connection } from '../connection/connection';
 import { MiraiConnection } from '../connection/mirai-connection';
-import { AdType, CreateAdParams, CreateEventParams, ListAdsType, LoginParams, UserType } from '../constants/types';
+import { AdsType, AdType, CreateAdParams, CreateEventParams, ListAdsType, LoginParams, UserType } from '../constants/types';
 import { NoAccessToken, SDKError } from '../errors';
 import { ShardsDSPService } from '../transports/http/http-dsp';
 import { getLocalStorageAsObject } from './../utils/auth-util';
@@ -140,6 +140,15 @@ export class MiraiCore extends Core {
 		}
 	}
 
+	public async getAdsByAdsBlock(adsBlockId: string, limit: number = 1): Promise<AdsType[]> {
+		try {
+			const response = await this.INSTANCE.adModule.getAdsByAdsBlock(this.accessToken, this.clientId, adsBlockId, limit);
+			return response;
+		} catch (error) {
+			console.error('Error during getAdsByAdsBlock:', error);
+		}
+	}
+
 	public async getListAds(limit: number, getAll: boolean = false): Promise<ListAdsType> {
 		try {
 			const response = await this.INSTANCE.adModule.getAds(this.accessToken, this.clientId, 50);
@@ -151,21 +160,35 @@ export class MiraiCore extends Core {
 		}
 	}
 
-	public async doAd(ad: AdType) {
+	public async doAd(ad: AdsType) {
 		try {
 			if (!ad) {
 				throw new Error('Ad is required');
 			}
 
 			const response = await this.INSTANCE.adModule.actionDoAd(this.accessToken, this.clientId, {
-				ad: ad._id,
-				app: this.clientId,
+				ad: ad.adsCampaign[0].id,
+				adsBlockId: ad.adsBlockId,
+				campaignId: ad.campaignId,
 			});
 			console.log('User Click Ad :>> ', ad);
 
 			return response;
 		} catch (error) {
 			console.error('Error during doAd:', error);
+		}
+	}
+
+	public async viewAd(ad: AdsType) {
+		try {
+			const response = await this.INSTANCE.adModule.actionViewAd(this.accessToken, this.clientId, {
+				ad: ad.adsCampaign[0].id,
+				adsBlockId: ad.adsBlockId,
+				campaignId: ad.campaignId,
+			});
+			return response;
+		} catch (error) {
+			console.error('Error during viewAd:', error);
 		}
 	}
 

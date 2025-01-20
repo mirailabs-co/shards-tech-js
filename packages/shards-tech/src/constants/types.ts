@@ -89,6 +89,26 @@ export type ListAdsType = {
 	matchScore: number;
 }[];
 
+export type AdCampaignType = {
+	id: string;
+	campaignId: string;
+	title: string;
+	desc: string | null;
+	url: string;
+	logo: string | null;
+	verifyUrl: string | null;
+	createdAt: string;
+	updatedAt: string;
+};
+
+export type AdsType = {
+	campaignId: string;
+	adsCampaign: AdCampaignType[];
+	matchScore: number;
+	adsBlockId: string;
+	bidForCPM: number;
+};
+
 export type CreateAdParams = {
 	adId: string;
 	app: string;
