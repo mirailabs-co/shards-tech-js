@@ -1,10 +1,12 @@
 import React, { useState, useLayoutEffect, useEffect } from 'react';
 import { ShardsDSPCore } from '..';
 import { AdsType } from '../constants/types';
+import { ConnectType } from './core';
 
 export type AdShardTechProps = {
 	adsBlockId: string;
 	clientId: string;
+	options?: ConnectType;
 };
 
 export const AdShardTech = (props: AdShardTechProps) => {
@@ -17,7 +19,7 @@ export const AdShardTech = (props: AdShardTechProps) => {
 			const shardsTech = await ShardsDSPCore.init({
 				clientId: props.clientId,
 			});
-			const [shardsTechCore, shardsTechConnection] = await shardsTech.connect();
+			const [shardsTechCore, shardsTechConnection] = await shardsTech.connect(props.options);
 			setShardsTechCore(shardsTechCore);
 		} catch (error) {
 			console.log(error);
@@ -38,7 +40,9 @@ export const AdShardTech = (props: AdShardTechProps) => {
 	}, [shardsTechCore, props.adsBlockId]);
 
 	useEffect(() => {
-        if (!ad || !shardsTechCore || isAdRendered) return;
+		if (!ad || !shardsTechCore || isAdRendered) {
+			return;
+		}
 		const checkAdRendered = () => {
 			const adElement = document.getElementById('adx-advertisement');
 			if (adElement) {
@@ -62,7 +66,9 @@ export const AdShardTech = (props: AdShardTechProps) => {
 		shardsTechCore.doAd(ad);
 	};
 
-    if (!shardsTechCore) return null;
+	if (!shardsTechCore) {
+		return null;
+	}
 
 	return (
 		<div className="mb-5 px-4">
