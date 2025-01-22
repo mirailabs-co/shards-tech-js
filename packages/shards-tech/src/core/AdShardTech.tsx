@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useLayoutEffect, useEffect, CSSProperties } from 'react';
 import { ShardsDSPCore } from '..';
 import { AdsType } from '../constants/types';
 import { ConnectType } from './core';
@@ -59,6 +59,12 @@ export const AdShardTech = (props: AdShardTechProps) => {
 		return () => clearInterval(intervalId);
 	}, [shardsTechCore, ad, isAdRendered]);
 
+	useEffect(() => {
+		const styleSheet = document.styleSheets[0];
+		styleSheet.insertRule(floatAnimation, styleSheet.cssRules.length);
+		styleSheet.insertRule(shineAnimation, styleSheet.cssRules.length);
+	}, []);
+
 	const onClickAd = () => {
 		if (ad?.adsCampaign[0]?.url) {
 			window.open(ad?.adsCampaign[0]?.url, '_blank');
@@ -71,95 +77,119 @@ export const AdShardTech = (props: AdShardTechProps) => {
 	}
 
 	return (
-		<div className="mb-5 px-4">
+		<div style={styles.advertisementSection}>
 			{shardsTechCore && (
 				<div
 					id="adx-advertisement"
-					className="advertisement-banner rounded-4 overflow-hidden cursor-pointer position-relative"
+					style={styles.advertisementBanner}
 					onClick={onClickAd}
-					style={{
-						width: '100%',
-						aspectRatio: '16/5',
-						transition: 'transform 0.2s ease-in-out',
-					}}
-					onMouseEnter={(e) => {
-						e.currentTarget.style.transform = 'scale(1.01)';
-					}}
-					onMouseLeave={(e) => {
-						e.currentTarget.style.transform = 'scale(1)';
-					}}
+					onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.01)')}
+					onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
 				>
-					<div
-						className="position-absolute top-0 end-0 m-2"
-						style={{ animation: 'float 3s ease-in-out infinite' }}
-					>
-						<img src="/svg/star.svg" alt="" className="opacity-75" style={{ width: 20, height: 20 }} />
-					</div>
-					<div
-						className="position-absolute bottom-0 start-0 m-2"
-						style={{ animation: 'float 3s ease-in-out infinite 1.5s' }}
-					>
-						<img src="/svg/sparkle.svg" alt="" className="opacity-75" style={{ width: 24, height: 24 }} />
-					</div>
+					<div style={styles.shineEffect} />
 
-					<div
-						className="position-absolute inset-0"
-						style={{
-							background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
-							animation: 'shine 2s infinite',
-							top: 0,
-							left: 0,
-							right: 0,
-							bottom: 0,
-						}}
-					/>
 					{ad?.adsCampaign[0]?.logo ? (
-						<img
-							src={ad?.adsCampaign[0]?.logo}
-							alt="Advertisement"
-							style={{
-								width: '100%',
-								height: '100%',
-								objectFit: 'cover',
-							}}
-						/>
+						<div style={styles.adContent}>
+							<img src={ad?.adsCampaign[0]?.logo} alt="Advertisement" style={styles.adContentImg} />
+						</div>
 					) : (
-						<div className="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
-							<span className="text-muted">Advertisement</span>
+						<div style={styles.adContentPlaceholder}>
+							<span style={styles.adContentPlaceholderText}>Advertisement</span>
 						</div>
 					)}
-
-					<style>{`
-						@keyframes float {
-							0%,
-							100% {
-								transform: translateY(0px);
-							}
-							50% {
-								transform: translateY(-10px);
-							}
-						}
-
-						@keyframes fadeIn {
-							from {
-								opacity: 0;
-							}
-							to {
-								opacity: 1;
-							}
-						}
-
-						@keyframes shine {
-							from {
-								transform: translateX(-100%);
-							}
-							to {
-								transform: translateX(100%);
-							}
-						}
-					`}</style>
 				</div>
 			)}
 		</div>
 	);
 };
+
+const styles: Record<string, CSSProperties> = {
+	advertisementSection: {
+		marginBottom: '3rem',
+		paddingLeft: '1.5rem',
+		paddingRight: '1.5rem',
+	},
+	advertisementBanner: {
+		width: '100%',
+		aspectRatio: '3.2',
+		transition: 'transform 0.2s ease-in-out',
+		borderRadius: '1rem',
+		overflow: 'hidden',
+		cursor: 'pointer',
+		position: 'relative',
+	},
+	advertisementBannerHover: {
+		transform: 'scale(1.01)',
+	},
+	decorationStar: {
+		position: 'absolute',
+		top: 0,
+		right: 0,
+		margin: '0.5rem',
+		animation: 'float 3s ease-in-out infinite',
+	},
+	decorationSparkle: {
+		position: 'absolute',
+		bottom: 0,
+		left: 0,
+		margin: '0.5rem',
+		animation: 'float 3s ease-in-out infinite',
+		animationDelay: '1.5s',
+	},
+	decorationImg: {
+		width: '20px',
+		height: '20px',
+		opacity: 0.75,
+	},
+	shineEffect: {
+		position: 'absolute',
+		inset: 0,
+		background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
+		animation: 'shine 2s infinite',
+	},
+	adContent: {
+		width: '100%',
+		height: '100%',
+	},
+	adContentImg: {
+		width: '100%',
+		height: '100%',
+		objectFit: 'cover',
+	},
+	adContentPlaceholder: {
+		width: '100%',
+		height: '100%',
+		backgroundColor: '#f0f0f0',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	adContentPlaceholderText: {
+		color: '#999',
+	},
+};
+
+const floatAnimation = `
+  @keyframes float {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+`;
+
+const shineAnimation = `
+  @keyframes shine {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+`;
