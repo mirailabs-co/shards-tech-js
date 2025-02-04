@@ -34,8 +34,10 @@
 		"@rollup/plugin-typescript": "^11.1.2",
 		"@tsconfig/recommended": "^1.0.3",
 		"@types/jest": "^29.5.3",
+		"@types/js-cookie": "^3.0.6",
 		"@types/lodash": "^4.14.195",
 		"@types/react": "^18.0.11",
+		"@types/telegram-web-app": "^7.10.1",
 		"@types/uuid": "^9.0.2",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
 		"@typescript-eslint/parser": "^5.27.0",
@@ -68,5 +70,9 @@
 	},
 	"publishConfig": {
 		"registry": "https://npm.pkg.github.com"
+	},
+	"dependencies": {
+		"@twa-dev/types": "^8.0.1",
+		"js-cookie": "^3.0.5"
 	}
 }
