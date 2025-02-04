@@ -33,7 +33,6 @@ export const AdShardTech = (props: AdShardTechProps) => {
 	useEffect(() => {
 		if (shardsTechCore) {
 			shardsTechCore.getAdsByAdsBlock(props.adsBlockId).then((ads: React.SetStateAction<AdsType>[]) => {
-				console.log('ads :>> ', ads);
 				setAd(ads[0]);
 			});
 		}
