@@ -66,8 +66,8 @@ export const AdShardTech = (props: AdShardTechProps) => {
 	}, []);
 
 	const onClickAd = () => {
-		if (ad?.adsCampaign[0]?.url) {
-			window.open(ad?.adsCampaign[0]?.url, '_blank');
+		if (ad?.adsCampaign?.[0]?.url) {
+			window.open(ad?.adsCampaign?.[0]?.url, '_blank');
 		}
 		shardsTechCore.doAd(ad);
 	};
@@ -88,9 +88,9 @@ export const AdShardTech = (props: AdShardTechProps) => {
 				>
 					<div style={styles.shineEffect} />
 
-					{ad?.adsCampaign[0]?.logo ? (
+					{ad?.adsCampaign?.[0]?.logo ? (
 						<div style={styles.adContent}>
-							<img src={ad?.adsCampaign[0]?.logo} alt="Advertisement" style={styles.adContentImg} />
+							<img src={ad?.adsCampaign?.[0]?.logo} alt="Advertisement" style={styles.adContentImg} />
 						</div>
 					) : (
 						<div style={styles.adContentPlaceholder}>

@@ -1,7 +1,15 @@
 import FingerprintJS, { GetResult } from '@fingerprintjs/fingerprintjs';
 import { Connection } from '../connection/connection';
 import { MiraiConnection } from '../connection/mirai-connection';
-import { AdsType, AdType, CreateAdParams, CreateEventParams, ListAdsType, LoginParams, UserType } from '../constants/types';
+import {
+	AdsType,
+	AdType,
+	CreateAdParams,
+	CreateEventParams,
+	ListAdsType,
+	LoginParams,
+	UserType,
+} from '../constants/types';
 import { NoAccessToken, SDKError } from '../errors';
 import { ShardsDSPService } from '../transports/http/http-dsp';
 import { getLocalStorageAsObject } from './../utils/auth-util';
@@ -20,7 +28,6 @@ export class MiraiCore extends Core {
 	intervalId: Timeout | null = null;
 	intervalTime: number = 2 * 60 * 1000; // 2 minutes
 	advertiserId: string;
-	// intervalTime: number = 5 * 1000; // 5 secs
 
 	constructor(opts?: ICore) {
 		super(opts);
@@ -81,29 +88,14 @@ export class MiraiCore extends Core {
 			this.INSTANCE = new ShardsDSPService(this.env);
 			const authToken = await this.INSTANCE.authModule.login(loginParams);
 
-			// console.log('Cookies.set 11111:>> ');
-			// Cookies.set('accessToken', authToken?.accessToken);
-			// Cookies.set('refreshToken', authToken?.refreshToken);
-
-			// console.log('Cookies.set2 22222 :>> ');
-			// Cookies.set('accessToken', authToken?.accessToken, {
-			// 	domain: 'api-adx-dev.shards.tech',
-			// });
-			// Cookies.set('refreshToken', authToken?.refreshToken, {
-			// 	domain: 'api-adx-dev.shards.tech',
-			// });
-
 			const { accessToken } = authToken || {};
 			this.accessToken = accessToken;
 			this.emit('connecting');
-			// const userInfo = await this.INSTANCE.usersModule.getUser({ accessToken, clientId: this.clientId });
 
 			const fp = await FingerprintJS.load();
 			const result: GetResult = await fp.get();
 
 			this.fingerprint = result;
-			// this.userInfo = userInfo;
-			// console.log('webGlBasics :>> ', this.fingerprint.components.webGlBasics);
 
 			const newConnection = await MiraiConnection.init({
 				clientId: this.clientId,
@@ -142,7 +134,12 @@ export class MiraiCore extends Core {
 
 	public async getAdsByAdsBlock(adsBlockId: string, limit: number = 1): Promise<AdsType[]> {
 		try {
-			const response = await this.INSTANCE.adModule.getAdsByAdsBlock(this.accessToken, this.clientId, adsBlockId, limit);
+			const response = await this.INSTANCE.adModule.getAdsByAdsBlock(
+				this.accessToken,
+				this.clientId,
+				adsBlockId,
+				limit,
+			);
 			return response;
 		} catch (error) {
 			console.error('Error during getAdsByAdsBlock:', error);
