@@ -2,6 +2,6 @@ module.exports = {
 	esm: false,
 	cjs: false,
 	cjsBundled: false,
-	// umd: true,
+	umd: true,
 	analyzerMode: 'disabled',
 };
