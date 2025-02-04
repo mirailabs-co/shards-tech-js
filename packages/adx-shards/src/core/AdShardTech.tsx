@@ -5,7 +5,7 @@ import { ConnectType } from './core';
 
 export type AdShardTechProps = {
 	adsBlockId: string;
-	clientId: string;
+	appId: string;
 	options?: ConnectType;
 };
 
@@ -17,7 +17,7 @@ export const AdShardTech = (props: AdShardTechProps) => {
 	const initShardsTechCore = async () => {
 		try {
 			const shardsTech = await ShardsDSPCore.init({
-				clientId: props.clientId,
+				clientId: props.appId,
 			});
 			const [shardsTechCore, shardsTechConnection] = await shardsTech.connect(props.options);
 			setShardsTechCore(shardsTechCore);
@@ -28,7 +28,7 @@ export const AdShardTech = (props: AdShardTechProps) => {
 
 	useLayoutEffect(() => {
 		initShardsTechCore();
-	}, [props.clientId]);
+	}, [props.appId]);
 
 	useEffect(() => {
 		if (shardsTechCore) {

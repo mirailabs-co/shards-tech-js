@@ -23,7 +23,7 @@ const ExamplePage = () => {
 	return (
 		<>
 			...
-			<AdShardTech adsBlockId={'ADS_BLOCK_ID'} clientId={'CLIENT_ID'} />
+			<AdShardTech adsBlockId={'ADS_BLOCK_ID'} appId={'APP_ID'} />
 			...
 		</>
 	);
@@ -32,5 +32,4 @@ const ExamplePage = () => {
 export default ExamplePage;
 ```
 
--   `ADS_BLOCK_ID` can be obtained from the [AdX Shards Admin](https://admin-adx.shards.tech/) page.
--   `CLIENT_ID` will be provided when you integrate with us.
+-   `ADS_BLOCK_ID` and `CLIENT_ID` can be obtained from the [AdX Shards Admin](https://admin-adx.shards.tech/) page.
