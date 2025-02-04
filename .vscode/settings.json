@@ -8,5 +8,10 @@
 			"changeProcessCWD": true
 		}
 	],
-	"prettier.configPath": ""
+	"prettier.configPath": "",
+	"cSpell.words": [
+		"fingerprintjs",
+		"Mirai",
+		"shardstech"
+	]
 }
