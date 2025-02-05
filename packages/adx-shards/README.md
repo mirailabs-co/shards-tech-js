@@ -4,7 +4,7 @@
 
 ## 🚀 Installation
 
-You can install the package using either `yarn` or `npm`:
+You can install the package using `yarn` or `npm`:
 
 ```sh
 yarn add @mirailabs-co/adx-shards
@@ -14,22 +14,23 @@ npm install @mirailabs-co/adx-shards
 
 ## 📌 Usage
 
-Here is an example of how to use `AdX Shards` in your project:
+Here’s how to use `AdX Shards` in your project:
 
 ```tsx
 import { AdShardTech } from '@mirailabs-co/adx-shards';
 
-const ExamplePage = () => {
-	return (
-		<>
-			...
-			<AdShardTech adsBlockId={'ADS_BLOCK_ID'} appId={'APP_ID'} />
-			...
-		</>
-	);
+const MyAdComponent = () => {
+	return <AdShardTech adsBlockId="ADS_BLOCK_ID" appId="APP_ID" />;
 };
 
-export default ExamplePage;
+export default MyAdComponent;
 ```
 
--   `ADS_BLOCK_ID` and `CLIENT_ID` can be obtained from the [AdX Shards Admin](https://admin-adx.shards.tech/) page.
+### 🔹 Notes:
+
+-   **`ADS_BLOCK_ID`** and **`APP_ID`** are required values. You can obtain them from the [AdX Shards Admin](https://admin-adx.shards.tech/) page.
+-   Replace these values with your actual credentials and use `<MyAdComponent />` anywhere in your application to display ads.
+
+---
+
+Now you're ready to integrate `AdX Shards` into your project! 🚀
