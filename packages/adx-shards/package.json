@@ -27,7 +27,8 @@
 		"js-cookie": "^3.0.5",
 		"jwt-decode": "^3.1.2",
 		"query-string": "^6.0.0",
-		"socket.io-client": "^4.7.2"
+		"socket.io-client": "^4.7.2",
+		"styled-components": "^6.1.14"
 	},
 	"gitHead": "a876917a14ef15c0bb536c220f87e5b65190c87d",
 	"publishConfig": {
