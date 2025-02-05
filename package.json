@@ -73,6 +73,7 @@
 	},
 	"dependencies": {
 		"@twa-dev/types": "^8.0.1",
-		"js-cookie": "^3.0.5"
+		"js-cookie": "^3.0.5",
+		"styled-components": "^6.1.14"
 	}
 }

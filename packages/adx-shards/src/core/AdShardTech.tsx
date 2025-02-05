@@ -1,4 +1,5 @@
-import React, { useState, useLayoutEffect, useEffect, CSSProperties } from 'react';
+import React, { useState, useLayoutEffect, useEffect } from 'react';
+import styled, { keyframes } from 'styled-components';
 import { ShardsDSPCore } from '..';
 import { AdsType } from '../constants/types';
 import { ConnectType } from './core';
@@ -7,19 +8,176 @@ export type AdShardTechProps = {
 	adsBlockId: string;
 	appId: string;
 	options?: ConnectType;
+	position?: 'top' | 'bottom' | 'left' | 'right';
 };
+
+const float = keyframes`
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+`;
+
+const shine = keyframes`
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+`;
+
+const AdvertisementSection = styled.div<{ position?: string }>`
+	${({ position }) =>
+		position
+			? `
+		position: fixed;
+		z-index: 999;
+		${position === 'left' || position === 'right' ? 'width: 100px;' : 'height: 150px;'}
+	`
+			: `
+		position: relative;
+		width: 100%;
+		padding: 0.5rem;
+	`}
+
+	${({ position }) => {
+		switch (position) {
+			case 'top':
+				return `
+					top: 0;
+					left: 50%;
+					transform: translateX(-50%);
+				`;
+			case 'bottom':
+				return `
+					bottom: 0;
+					left: 50%;
+					transform: translateX(-50%);
+				`;
+			case 'left':
+				return `
+					left: 0;
+					top: 50%;
+					transform: translateY(-50%);
+				`;
+			case 'right':
+				return `
+					right: 0;
+					top: 50%;
+					transform: translateY(-50%);
+				`;
+			default:
+				return '';
+		}
+	}}
+
+	@media (max-width: 768px) {
+		${({ position }) => {
+			if (!position) {
+				return '';
+			}
+			return position === 'left' || position === 'right' ? 'width: 80px;' : 'height: 100px;';
+		}}
+	}
+`;
+
+const AdvertisementBanner = styled.div<{ position?: string }>`
+	width: 100%;
+	height: 100%;
+	aspect-ratio: ${({ position }) => {
+		if (!position) {
+			return '16/9';
+		}
+		return position === 'left' || position === 'right' ? '1/2' : '3/1';
+	}};
+	transition: transform 0.2s ease-in-out;
+	overflow: hidden;
+	cursor: pointer;
+	position: relative;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+	border-radius: ${({ position }) => (position ? '0' : '0.5rem')};
+
+	&:hover {
+		transform: scale(1.01);
+	}
+`;
+
+const ShineEffect = styled.div`
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+	animation: ${shine} 2s infinite;
+`;
+
+const AdContent = styled.div`
+	width: 100%;
+	height: 100%;
+`;
+
+const AdContentImg = styled.img`
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+`;
+
+const AdContentPlaceholder = styled.div`
+	width: 100%;
+	height: 100%;
+	background-color: #f0f0f0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+`;
+
+const AdContentPlaceholderText = styled.span`
+	color: #999;
+`;
+
+const CloseButton = styled.button`
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: rgba(0, 0, 0, 0.5);
+	border: none;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+	padding: 0;
+	transition: background 0.2s ease;
+
+	&:hover {
+		background: rgba(0, 0, 0, 0.7);
+	}
+
+	&::before,
+	&::after {
+		content: '';
+		position: absolute;
+		width: 12px;
+		height: 2px;
+		background: white;
+	}
+
+	&::before {
+		transform: rotate(45deg);
+	}
+
+	&::after {
+		transform: rotate(-45deg);
+	}
+`;
 
 export const AdShardTech = (props: AdShardTechProps) => {
 	const [shardsTechCore, setShardsTechCore] = useState<any | null>(null);
 	const [ad, setAd] = useState<AdsType | null>(null);
 	const [isAdRendered, setIsAdRendered] = useState(false);
+	const [isVisible, setIsVisible] = useState(true);
 
 	const initShardsTechCore = async () => {
 		try {
-			const shardsTech = await ShardsDSPCore.init({
-				clientId: props.appId,
-			});
-			const [shardsTechCore, shardsTechConnection] = await shardsTech.connect(props.options);
+			const shardsTech = await ShardsDSPCore.init({ clientId: props.appId });
+			const [shardsTechCore] = await shardsTech.connect(props.options);
 			setShardsTechCore(shardsTechCore);
 		} catch (error) {
 			console.log(error);
@@ -32,7 +190,7 @@ export const AdShardTech = (props: AdShardTechProps) => {
 
 	useEffect(() => {
 		if (shardsTechCore) {
-			shardsTechCore.getAdsByAdsBlock(props.adsBlockId).then((ads: React.SetStateAction<AdsType>[]) => {
+			shardsTechCore.getAdsByAdsBlock(props.adsBlockId).then((ads: AdsType[]) => {
 				setAd(ads[0]);
 			});
 		}
@@ -42,153 +200,50 @@ export const AdShardTech = (props: AdShardTechProps) => {
 		if (!ad || !shardsTechCore || isAdRendered) {
 			return;
 		}
+
 		const checkAdRendered = () => {
 			const adElement = document.getElementById('adx-advertisement');
-			if (adElement) {
-				const adContent = adElement.innerHTML.trim().length > 0;
-				if (adContent && ad && shardsTechCore && !isAdRendered) {
-					shardsTechCore.viewAd(ad);
-					setIsAdRendered(true);
-				}
+			if (adElement?.innerHTML.trim().length > 0) {
+				shardsTechCore.viewAd(ad);
+				setIsAdRendered(true);
 			}
 		};
 
 		const intervalId = setInterval(checkAdRendered, 1000);
-
 		return () => clearInterval(intervalId);
 	}, [shardsTechCore, ad, isAdRendered]);
 
-	useEffect(() => {
-		const styleSheet = document.styleSheets[0];
-		styleSheet.insertRule(floatAnimation, styleSheet.cssRules.length);
-		styleSheet.insertRule(shineAnimation, styleSheet.cssRules.length);
-	}, []);
-
 	const onClickAd = () => {
 		if (ad?.adsCampaign?.[0]?.url) {
-			window.open(ad?.adsCampaign?.[0]?.url, '_blank');
+			window.open(ad.adsCampaign[0].url, '_blank');
 		}
-		shardsTechCore.doAd(ad);
+		shardsTechCore?.doAd(ad);
 	};
 
-	if (!shardsTechCore) {
+	const handleClose = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		setIsVisible(false);
+	};
+
+	if (!shardsTechCore || !isVisible) {
 		return null;
 	}
 
 	return (
-		<div style={styles.advertisementSection}>
-			{shardsTechCore && (
-				<div
-					id="adx-advertisement"
-					style={styles.advertisementBanner}
-					onClick={onClickAd}
-					onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.01)')}
-					onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-				>
-					<div style={styles.shineEffect} />
-
-					{ad?.adsCampaign?.[0]?.logo ? (
-						<div style={styles.adContent}>
-							<img src={ad?.adsCampaign?.[0]?.logo} alt="Advertisement" style={styles.adContentImg} />
-						</div>
-					) : (
-						<div style={styles.adContentPlaceholder}>
-							<span style={styles.adContentPlaceholderText}>Advertisement</span>
-						</div>
-					)}
-				</div>
-			)}
-		</div>
+		<AdvertisementSection position={props.position}>
+			<AdvertisementBanner id="adx-advertisement" onClick={onClickAd} position={props.position}>
+				{props.position && <CloseButton onClick={handleClose} />}
+				<ShineEffect />
+				{ad?.adsCampaign?.[0]?.logo ? (
+					<AdContent>
+						<AdContentImg src={ad.adsCampaign[0].logo} alt="Advertisement" />
+					</AdContent>
+				) : (
+					<AdContentPlaceholder>
+						<AdContentPlaceholderText>Advertisement</AdContentPlaceholderText>
+					</AdContentPlaceholder>
+				)}
+			</AdvertisementBanner>
+		</AdvertisementSection>
 	);
 };
-
-const styles: Record<string, CSSProperties> = {
-	advertisementSection: {
-		marginBottom: '3rem',
-		paddingLeft: '1.5rem',
-		paddingRight: '1.5rem',
-	},
-	advertisementBanner: {
-		width: '100%',
-		aspectRatio: '3.2',
-		transition: 'transform 0.2s ease-in-out',
-		borderRadius: '1rem',
-		overflow: 'hidden',
-		cursor: 'pointer',
-		position: 'relative',
-	},
-	advertisementBannerHover: {
-		transform: 'scale(1.01)',
-	},
-	decorationStar: {
-		position: 'absolute',
-		top: 0,
-		right: 0,
-		margin: '0.5rem',
-		animation: 'float 3s ease-in-out infinite',
-	},
-	decorationSparkle: {
-		position: 'absolute',
-		bottom: 0,
-		left: 0,
-		margin: '0.5rem',
-		animation: 'float 3s ease-in-out infinite',
-		animationDelay: '1.5s',
-	},
-	decorationImg: {
-		width: '20px',
-		height: '20px',
-		opacity: 0.75,
-	},
-	shineEffect: {
-		position: 'absolute',
-		inset: 0,
-		background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
-		animation: 'shine 2s infinite',
-	},
-	adContent: {
-		width: '100%',
-		height: '100%',
-	},
-	adContentImg: {
-		width: '100%',
-		height: '100%',
-		objectFit: 'cover',
-	},
-	adContentPlaceholder: {
-		width: '100%',
-		height: '100%',
-		backgroundColor: '#f0f0f0',
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	adContentPlaceholderText: {
-		color: '#999',
-	},
-};
-
-const floatAnimation = `
-  @keyframes float {
-    0% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
-    100% {
-      transform: translateY(0);
-    }
-  }
-`;
-
-const shineAnimation = `
-  @keyframes shine {
-    0% {
-      transform: translateX(-100%);
-    }
-    100% {
-      transform: translateX(100%);
-    }
-  }
-`;
