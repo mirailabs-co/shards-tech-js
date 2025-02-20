@@ -1,18 +1,19 @@
 import React, { useState, useLayoutEffect, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { ShardsDSPCore } from '..';
-import { AdsType } from '../constants/types';
+import { AdPosition, AdsType } from '../constants/types';
 import { ConnectType } from './core';
 
 export type AdShardTechProps = {
 	adsBlockId: string;
 	appId: string;
 	options?: ConnectType;
-	position?: 'top' | 'bottom' | 'left' | 'right';
+	position?: AdPosition;
+	env?: string;
 };
 
 const float = keyframes`
-  0% { transform: translateY(0); }
+0% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
   100% { transform: translateY(0); }
 `;
@@ -23,30 +24,15 @@ const shine = keyframes`
 `;
 
 const AdvertisementSection = styled.div<{ position?: string }>`
-	${({ position }) =>
-		position
-			? `
-		position: fixed;
-		z-index: 999;
-		${position === 'left' || position === 'right' ? 'width: 100px;' : 'height: 150px;'}
-	`
-			: `
-		position: relative;
-		width: 100%;
-		padding: 0.5rem;
-	`}
+	position: fixed;
+	z-index: 999;
+	${({ position }) => (position === 'left' || position === 'right' ? 'width: 100px;' : 'height: 150px;')}
 
 	${({ position }) => {
 		switch (position) {
 			case 'top':
 				return `
 					top: 0;
-					left: 50%;
-					transform: translateX(-50%);
-				`;
-			case 'bottom':
-				return `
-					bottom: 0;
 					left: 50%;
 					transform: translateX(-50%);
 				`;
@@ -62,36 +48,30 @@ const AdvertisementSection = styled.div<{ position?: string }>`
 					top: 50%;
 					transform: translateY(-50%);
 				`;
-			default:
-				return '';
+			default: // bottom
+				return `
+					bottom: 0;
+					left: 50%;
+					transform: translateX(-50%);
+				`;
 		}
 	}}
 
 	@media (max-width: 768px) {
-		${({ position }) => {
-			if (!position) {
-				return '';
-			}
-			return position === 'left' || position === 'right' ? 'width: 80px;' : 'height: 100px;';
-		}}
+		${({ position }) => (position === 'left' || position === 'right' ? 'width: 80px;' : 'height: 100px;')}
 	}
 `;
 
 const AdvertisementBanner = styled.div<{ position?: string }>`
 	width: 100%;
 	height: 100%;
-	aspect-ratio: ${({ position }) => {
-		if (!position) {
-			return '16/9';
-		}
-		return position === 'left' || position === 'right' ? '1/2' : '3/1';
-	}};
+	aspect-ratio: ${({ position }) => (position === 'left' || position === 'right' ? '1/2' : '3/1')};
 	transition: transform 0.2s ease-in-out;
 	overflow: hidden;
 	cursor: pointer;
 	position: relative;
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-	border-radius: ${({ position }) => (position ? '0' : '0.5rem')};
+	border-radius: 0;
 
 	&:hover {
 		transform: scale(1.01);
@@ -176,7 +156,7 @@ export const AdShardTech = (props: AdShardTechProps) => {
 
 	const initShardsTechCore = async () => {
 		try {
-			const shardsTech = await ShardsDSPCore.init({ clientId: props.appId });
+			const shardsTech = await ShardsDSPCore.init({ clientId: props.appId, env: props.env || 'development' });
 			const [shardsTechCore] = await shardsTech.connect(props.options);
 			setShardsTechCore(shardsTechCore);
 		} catch (error) {

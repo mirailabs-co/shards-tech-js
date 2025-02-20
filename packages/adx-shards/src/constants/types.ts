@@ -1,3 +1,8 @@
+export enum AdPosition {
+	BOTTOM = 'bottom',
+	TOP = 'top',
+}
+
 export type AuthTokenType = {
 	accessToken: string;
 	refreshToken: string;
@@ -96,6 +101,12 @@ export type AdCampaignType = {
 	desc: string | null;
 	url: string;
 	logo: string | null;
+	images: {
+		position: string;
+		url: string;
+		width?: number;
+		height?: number;
+	}[];
 	verifyUrl: string | null;
 	createdAt: string;
 	updatedAt: string;
@@ -147,3 +158,11 @@ export type CreateEventParams = {
 		[key: string]: any;
 	};
 };
+
+export type StartViewAdResponse = {
+	startTimestamp: number;
+	nextTimestamp: number;
+	endTimestamp: number;
+};
+
+export type TrackViewAdResponse = StartViewAdResponse & { isEnd: boolean };

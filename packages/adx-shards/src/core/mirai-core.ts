@@ -176,6 +176,60 @@ export class MiraiCore extends Core {
 		}
 	}
 
+	public async startViewAd(ad: AdsType) {
+		try {
+			if (!ad) {
+				throw new Error('Ad is required');
+			}
+
+			const response = await this.INSTANCE.adModule.startViewAd(this.accessToken, this.clientId, {
+				ad: ad.adsCampaign[0].id,
+				adsBlockId: ad.adsBlockId,
+				campaignId: ad.campaignId,
+			});
+
+			return response;
+		} catch (error) {
+			console.error('Error during startViewAd:', error);
+		}
+	}
+
+	public async trackViewAd(ad: AdsType) {
+		try {
+			if (!ad) {
+				throw new Error('Ad is required');
+			}
+
+			const response = await this.INSTANCE.adModule.trackViewAd(this.accessToken, this.clientId, {
+				ad: ad.adsCampaign[0].id,
+				adsBlockId: ad.adsBlockId,
+				campaignId: ad.campaignId,
+			});
+
+			return response;
+		} catch (error) {
+			console.error('Error during trackViewAd:', error);
+		}
+	}
+
+	public async endViewAd(ad: AdsType) {
+		try {
+			if (!ad) {
+				throw new Error('Ad is required');
+			}
+
+			const response = await this.INSTANCE.adModule.endViewAd(this.accessToken, this.clientId, {
+				ad: ad.adsCampaign[0].id,
+				adsBlockId: ad.adsBlockId,
+				campaignId: ad.campaignId,
+			});
+
+			return response;
+		} catch (error) {
+			console.error('Error during endViewAd:', error);
+		}
+	}
+
 	public async viewAd(ad: AdsType) {
 		try {
 			const response = await this.INSTANCE.adModule.actionViewAd(this.accessToken, this.clientId, {
