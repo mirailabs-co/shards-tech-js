@@ -1,6 +1,6 @@
 {
 	"name": "@mirailabs-co/adx-shards",
-	"version": "2.3.2",
+	"version": "2.3.3",
 	"description": "AdX Shards JavaScript",
 	"author": "",
 	"repository": "github:mirailabs-co/shards-tech-js",
@@ -30,7 +30,7 @@
 		"socket.io-client": "^4.7.2",
 		"styled-components": "^6.1.14"
 	},
-	"gitHead": "5b05ad78d883c67e55dc997647b4180e44c8074b",
+	"gitHead": "a876917a14ef15c0bb536c220f87e5b65190c87d",
 	"publishConfig": {
 		"access": "public"
 	},
