@@ -1,11 +1,13 @@
 import {
-    AdsType,
+	AdsType,
 	AuthTokenType,
 	CreateAdParams,
 	CreateEventParams,
 	DoAdResponse,
 	ListAdsType,
 	LoginParams,
+	StartViewAdResponse,
+	TrackViewAdResponse,
 	UserAttribute,
 } from '../../constants/types';
 import { BaseHttpService } from './http-base';
@@ -49,8 +51,16 @@ class ShardsDSPService extends BaseHttpService {
 			);
 		},
 
-		getAdsByAdsBlock: async (accessToken: string, clientId: string, adsBlockId: string, limit: number): Promise<AdsType[]> => {
-			return this.sendGet(`v1/ads/ads-block/${adsBlockId}/${limit}`, {}, {
+		getAdsByAdsBlock: async (
+			accessToken: string,
+			clientId: string,
+			adsBlockId: string,
+			limit: number,
+		): Promise<AdsType[]> => {
+			return this.sendGet(
+				`v1/ads/ads-block/${adsBlockId}/${limit}`,
+				{},
+				{
 					'Authorization': `Bearer ${accessToken}`,
 					'x-client-id': clientId,
 				},
@@ -80,6 +90,36 @@ class ShardsDSPService extends BaseHttpService {
 			params: { ad: string; adsBlockId: string; campaignId: string },
 		): Promise<boolean> => {
 			return this.sendPost('v1/history/user-view-ad', params, {
+				'Authorization': `Bearer ${accessToken}`,
+				'x-client-id': clientId,
+			});
+		},
+		startViewAd: async (
+			accessToken: string,
+			clientId: string,
+			params: { ad: string; adsBlockId: string; campaignId: string },
+		): Promise<StartViewAdResponse> => {
+			return this.sendPost('v1/history/start-view-ad', params, {
+				'Authorization': `Bearer ${accessToken}`,
+				'x-client-id': clientId,
+			});
+		},
+		trackViewAd: async (
+			accessToken: string,
+			clientId: string,
+			params: { ad: string; adsBlockId: string; campaignId: string },
+		): Promise<TrackViewAdResponse> => {
+			return this.sendPost('v1/history/track-view-ad', params, {
+				'Authorization': `Bearer ${accessToken}`,
+				'x-client-id': clientId,
+			});
+		},
+		endViewAd: async (
+			accessToken: string,
+			clientId: string,
+			params: { ad: string; adsBlockId: string; campaignId: string },
+		): Promise<any> => {
+			return this.sendPost('v1/history/end-view-ad', params, {
 				'Authorization': `Bearer ${accessToken}`,
 				'x-client-id': clientId,
 			});

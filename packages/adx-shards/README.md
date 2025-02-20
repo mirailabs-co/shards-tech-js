@@ -19,17 +19,17 @@ Here’s how to use `AdX Shards` in your project:
 ```tsx
 import { AdShardTech } from '@mirailabs-co/adx-shards';
 
-const MyAdComponent = () => {
+const AdXComponent = () => {
 	return <AdShardTech adsBlockId="ADS_BLOCK_ID" appId="APP_ID" />;
 };
 
-export default MyAdComponent;
+export default AdXComponent;
 ```
 
 ### 🔹 Notes:
 
--   **`ADS_BLOCK_ID`** and **`APP_ID`** are required values. You can obtain them from the [AdX Shards Admin](https://admin-adx.shards.tech/) page.
--   Replace these values with your actual credentials and use `<MyAdComponent />` anywhere in your application to display ads.
+-   **`ADS_BLOCK_ID`** and **`APP_ID`** are required values. You can obtain them from the [AdX Shards Publisher](https://publisher-adx.shards.tech/) (or development environment [AdX Shards Admin Dev](https://publisher-dev-1737355217.shards.tech/)) page.
+-   Replace these values with your actual credentials and use `<AdXComponent />` anywhere in your application to display ads.
 
 ---
 
