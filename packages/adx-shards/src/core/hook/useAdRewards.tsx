@@ -1,7 +1,7 @@
 import React, { createContext, FC, PropsWithChildren, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ShardsDSPCore } from '../..';
-import { AdPosition, AdsType } from '../../constants/types';
+import { AdPosition, AdsMediaType, AdsType } from '../../constants/types';
 import { ConnectType } from '../core';
 
 const AD_TIME = 20;
@@ -19,10 +19,14 @@ const Overlay = styled.div`
 	z-index: 9999;
 `;
 
-const CloseButton = styled.button<{ disabled: boolean }>`
+const CloseButtonWrapper = styled.div`
 	position: absolute;
-	top: 16px;
 	right: 16px;
+	top: 16px;
+	z-index: 10000;
+`;
+
+const CloseButton = styled.button<{ disabled: boolean }>`
 	min-width: 120px;
 	height: 32px;
 	display: flex;
@@ -36,21 +40,16 @@ const CloseButton = styled.button<{ disabled: boolean }>`
 	font-size: 14px;
 	border: none;
 	transition: background-color 0.2s;
+	pointer-events: auto;
 
 	&:hover {
 		background-color: ${(props) => (!props.disabled ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0.7)')};
 	}
 `;
 
-const CloseButtonWrapper = styled.div`
-	position: absolute;
-	right: 16px;
-	top: 16px;
-`;
-
 const AdMedia = styled.div`
 	width: 100%;
-	height: 100vh;
+	height: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -63,16 +62,6 @@ const AdMedia = styled.div`
 		max-width: 100%;
 		max-height: 100vh;
 		object-fit: contain;
-	}
-
-	video {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		min-width: 100%;
-		min-height: 100%;
-		object-fit: cover;
 	}
 `;
 
@@ -119,6 +108,7 @@ export const AdRewards: FC<AdRewardsProps & PropsWithChildren> = ({
 
 	const [shardsTechCore, setShardsTechCore] = useState<ShardsDSPCore | null>(null);
 	const [ad, setAd] = useState<AdsType | null>(null);
+	const adsCampaign = ad?.adsCampaign?.[0];
 
 	const initShardsTechCore = async () => {
 		try {
@@ -225,8 +215,6 @@ export const AdRewards: FC<AdRewardsProps & PropsWithChildren> = ({
 		}
 	};
 
-	const media = ad?.adsCampaign?.[0]?.logo || ad?.adsCampaign?.[0]?.images?.[0]?.url || '';
-
 	return (
 		<AdContext.Provider value={{ showAd: showAdFunction, isAdCompleted }}>
 			{children}
@@ -239,23 +227,23 @@ export const AdRewards: FC<AdRewardsProps & PropsWithChildren> = ({
 					</CloseButtonWrapper>
 
 					<AdMedia>
-						{media ? (
-							media.endsWith('.mp4') ? (
+						{adsCampaign ? (
+							adsCampaign?.contentType === AdsMediaType.VIDEO ? (
 								<video
 									autoPlay
 									muted
 									playsInline
-									loop={false}
+									loop
 									controls={false}
 									preload="auto"
 									disablePictureInPicture
 									controlsList="nodownload noplaybackrate"
 									onContextMenu={(e) => e.preventDefault()}
 								>
-									<source src={media} type="video/mp4" />
+									<source src={adsCampaign?.videos?.[0]?.url} type="video/mp4" />
 								</video>
 							) : (
-								<img src={media} alt="Advertisement" />
+								<img src={adsCampaign?.images?.[0]?.url || adsCampaign?.logo} alt="Advertisement" />
 							)
 						) : (
 							<Placeholder>Advertisement</Placeholder>
