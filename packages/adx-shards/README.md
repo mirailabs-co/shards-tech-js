@@ -28,7 +28,7 @@ export default AdXComponent;
 
 ### 🔹 Notes:
 
--   **`ADS_BLOCK_ID`** and **`APP_ID`** are required values. You can obtain them from the [AdX Shards Publisher](https://publisher-adx.shards.tech/) (or development environment [AdX Shards Admin Dev](https://publisher-dev-1737355217.shards.tech/)) page.
+-   **`ADS_BLOCK_ID`** and **`APP_ID`** are required values. You can obtain them from the [AdX Shards Publisher](https://publisher-adx.shards.tech/) (or development environment [AdX Shards Publisher Dev](https://publisher-dev-1737355217.shards.tech/)) page.
 -   Replace these values with your actual credentials and use `<AdXComponent />` anywhere in your application to display ads.
 
 ---
