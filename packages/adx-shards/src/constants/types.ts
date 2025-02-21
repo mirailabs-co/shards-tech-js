@@ -3,6 +3,17 @@ export enum AdPosition {
 	TOP = 'top',
 }
 
+export enum MediaPosition {
+	HORIZONTAL = 'horizontal',
+	VERTICAL = 'vertical',
+	FULL_SCREEN = 'full_screen',
+}
+
+export enum AdsMediaType {
+	VIDEO = 'video',
+	IMAGE = 'image',
+}
+
 export type AuthTokenType = {
 	accessToken: string;
 	refreshToken: string;
@@ -95,21 +106,26 @@ export type ListAdsType = {
 }[];
 
 export type AdCampaignType = {
-	id: string;
-	campaignId: string;
 	title: string;
-	desc: string | null;
+	desc: string;
 	url: string;
-	logo: string | null;
+	logo: string;
+	verifyUrl: string;
 	images: {
-		position: string;
+		position: MediaPosition;
 		url: string;
 		width?: number;
 		height?: number;
 	}[];
-	verifyUrl: string | null;
-	createdAt: string;
-	updatedAt: string;
+	videos: {
+		position: MediaPosition;
+		url: string;
+	}[];
+	contentType: AdsMediaType;
+	id?: string;
+	campaignId?: string;
+	createdAt?: string;
+	updatedAt?: string;
 };
 
 export type AdsType = {
