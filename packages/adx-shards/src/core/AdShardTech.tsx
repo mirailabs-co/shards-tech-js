@@ -186,6 +186,12 @@ export const AdShardTech = (props: AdShardTechProps) => {
 			if (adElement?.innerHTML.trim().length > 0) {
 				shardsTechCore.viewAd(ad);
 				setIsAdRendered(true);
+
+				window?.gtag('event', 'ad_banner_viewed', {
+					ad_id: ad?.adsCampaign?.[0]?.id,
+					ad_block_id: ad?.adsBlockId,
+					ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
+				});
 			}
 		};
 

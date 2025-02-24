@@ -4,6 +4,13 @@ import { ShardsDSPCore } from '../..';
 import { AdPosition, AdsMediaType, AdsType } from '../../constants/types';
 import { ConnectType } from '../core';
 
+declare global {
+	interface Window {
+		dataLayer: any[];
+		gtag: (...args: any[]) => void;
+	}
+}
+
 const AD_TIME = 20;
 
 // Styled Components
@@ -76,7 +83,6 @@ const Placeholder = styled.div`
 	font-size: 24px;
 `;
 
-// Context để quản lý trạng thái quảng cáo
 interface AdContextType {
 	showAd: () => void;
 	isAdCompleted: boolean;
@@ -148,6 +154,12 @@ export const AdRewards: FC<AdRewardsProps & PropsWithChildren> = ({
 					setIsAdCompleted(true);
 					clearInterval(trackingInterval);
 					shardsTechCore.endViewAd(ad);
+
+					window?.gtag('event', 'ad_video_completed', {
+						ad_id: ad?.adsCampaign?.[0]?.id,
+						ad_block_id: ad?.adsBlockId,
+						ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
+					});
 				} else if (response?.nextTimestamp) {
 					setNextTimestamp(response.nextTimestamp);
 				}
@@ -207,9 +219,6 @@ export const AdRewards: FC<AdRewardsProps & PropsWithChildren> = ({
 
 	const handleCloseAd = async () => {
 		if (canClose) {
-			if (shardsTechCore && ad) {
-				await shardsTechCore.endViewAd(ad);
-			}
 			setIsTracking(false);
 			setShowAd(false);
 		}
