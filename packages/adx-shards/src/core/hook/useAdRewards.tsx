@@ -93,7 +93,6 @@ export type AdRewardsProps = {
 	adsBlockId: string;
 	appId: string;
 	options?: ConnectType;
-	position?: AdPosition;
 	env?: string;
 };
 
@@ -101,8 +100,7 @@ export const AdRewards: FC<AdRewardsProps & PropsWithChildren> = ({
 	adsBlockId,
 	appId,
 	options,
-	position,
-	env,
+	env = 'development',
 	children,
 }) => {
 	const [showAd, setShowAd] = useState(false);
@@ -118,7 +116,7 @@ export const AdRewards: FC<AdRewardsProps & PropsWithChildren> = ({
 
 	const initShardsTechCore = async () => {
 		try {
-			const shardsTech = await ShardsDSPCore.init({ clientId: appId, env: env || 'development' });
+			const shardsTech = await ShardsDSPCore.init({ clientId: appId, env });
 			const [shardsTechCore] = await shardsTech.connect(options);
 			setShardsTechCore(shardsTechCore);
 		} catch (error) {
@@ -155,7 +153,7 @@ export const AdRewards: FC<AdRewardsProps & PropsWithChildren> = ({
 					clearInterval(trackingInterval);
 					shardsTechCore.endViewAd(ad);
 
-					window?.gtag('event', 'ad_video_completed', {
+					window?.gtag('event', `${env}-ad_video_completed`, {
 						ad_id: ad?.adsCampaign?.[0]?.id,
 						ad_block_id: ad?.adsBlockId,
 						ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
@@ -206,7 +204,7 @@ export const AdRewards: FC<AdRewardsProps & PropsWithChildren> = ({
 
 		setIsAdCompleted(false);
 		const response = await shardsTechCore.startViewAd(ad);
-		window?.gtag('event', 'ad_video_started', {
+		window?.gtag('event', `${env}-ad_video_started`, {
 			ad_id: ad?.adsCampaign?.[0]?.id,
 			ad_block_id: ad?.adsBlockId,
 			ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
