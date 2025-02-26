@@ -153,11 +153,13 @@ export const AdRewards: FC<AdRewardsProps & PropsWithChildren> = ({
 					clearInterval(trackingInterval);
 					shardsTechCore.endViewAd(ad);
 
-					window?.gtag('event', `${env}-ad_video_completed`, {
-						ad_id: ad?.adsCampaign?.[0]?.id,
-						ad_block_id: ad?.adsBlockId,
-						ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
-					});
+					try {
+						window?.gtag('event', `${env}-ad_video_completed`, {
+							ad_id: ad?.adsCampaign?.[0]?.id,
+							ad_block_id: ad?.adsBlockId,
+							ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
+						});
+					} catch (error) {}
 				} else if (response?.nextTimestamp) {
 					setNextTimestamp(response.nextTimestamp);
 				}
@@ -204,11 +206,14 @@ export const AdRewards: FC<AdRewardsProps & PropsWithChildren> = ({
 
 		setIsAdCompleted(false);
 		const response = await shardsTechCore.startViewAd(ad);
-		window?.gtag('event', `${env}-ad_video_started`, {
-			ad_id: ad?.adsCampaign?.[0]?.id,
-			ad_block_id: ad?.adsBlockId,
-			ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
-		});
+
+		try {
+			window?.gtag('event', `${env}-ad_video_started`, {
+				ad_id: ad?.adsCampaign?.[0]?.id,
+				ad_block_id: ad?.adsBlockId,
+				ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
+			});
+		} catch (error) {}
 
 		if (response?.nextTimestamp) {
 			setNextTimestamp(response.nextTimestamp);
