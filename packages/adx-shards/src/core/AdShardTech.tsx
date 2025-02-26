@@ -65,7 +65,7 @@ const AdvertisementSection = styled.div<{ position?: string }>`
 const AdvertisementBanner = styled.div<{ position?: string }>`
 	width: 100%;
 	height: 100%;
-	aspect-ratio: ${({ position }) => (position === 'left' || position === 'right' ? '1/2' : '3/1')};
+	aspect-ratio: ${({ position }) => (position === 'left' || position === 'right' ? '1/2' : '32/10')};
 	transition: transform 0.2s ease-in-out;
 	overflow: hidden;
 	cursor: pointer;
