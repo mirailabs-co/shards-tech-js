@@ -53,8 +53,8 @@ import { AdRewards, useAdRewards } from '@mirailabs-co/adx-shards';
 const App = () => {
 	return (
 		<AdRewards
-			adsBlockId="YOUR_REWARD_ADS_BLOCK_ID"
-			appId="YOUR_APP_ID"
+			adsBlockId="ADS_BLOCK_ID"
+			appId="APP_ID"
 			env="production" // Optional, defaults to 'development'
 		>
 			<YourComponents />
