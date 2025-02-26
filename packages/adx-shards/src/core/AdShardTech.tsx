@@ -201,7 +201,14 @@ export const AdShardTech = (props: AdShardTechProps) => {
 
 	const onClickAd = () => {
 		if (ad?.adsCampaign?.[0]?.url) {
+			window?.gtag('event', 'ad_banner_clicked', {
+				ad_id: ad?.adsCampaign?.[0]?.id,
+				ad_block_id: ad?.adsBlockId,
+				ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
+			});
+
 			window.open(ad.adsCampaign[0].url, '_blank');
+
 		}
 		shardsTechCore?.doAd(ad);
 	};

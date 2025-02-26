@@ -206,6 +206,11 @@ export const AdRewards: FC<AdRewardsProps & PropsWithChildren> = ({
 
 		setIsAdCompleted(false);
 		const response = await shardsTechCore.startViewAd(ad);
+		window?.gtag('event', 'ad_video_started', {
+			ad_id: ad?.adsCampaign?.[0]?.id,
+			ad_block_id: ad?.adsBlockId,
+			ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
+		});
 
 		if (response?.nextTimestamp) {
 			setNextTimestamp(response.nextTimestamp);
