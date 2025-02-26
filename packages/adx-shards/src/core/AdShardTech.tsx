@@ -154,6 +154,8 @@ export const AdShardTech = (props: AdShardTechProps) => {
 	const [isAdRendered, setIsAdRendered] = useState(false);
 	const [isVisible, setIsVisible] = useState(true);
 
+	const banner = ad?.adsCampaign?.[0]?.images?.[0]?.url || ad?.adsCampaign?.[0]?.logo || '';
+
 	const initShardsTechCore = async () => {
 		try {
 			const shardsTech = await ShardsDSPCore.init({ clientId: props.appId, env: props.env || 'development' });
@@ -228,9 +230,9 @@ export const AdShardTech = (props: AdShardTechProps) => {
 			<AdvertisementBanner id="adx-advertisement" onClick={onClickAd} position={props.position}>
 				{props.position && <CloseButton onClick={handleClose} />}
 				<ShineEffect />
-				{ad?.adsCampaign?.[0]?.logo ? (
+				{banner ? (
 					<AdContent>
-						<AdContentImg src={ad.adsCampaign[0].logo} alt="Advertisement" />
+						<AdContentImg src={banner} alt="Advertisement" />
 					</AdContent>
 				) : (
 					<AdContentPlaceholder>
