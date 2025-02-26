@@ -65,7 +65,7 @@ const AdvertisementSection = styled.div<{ position?: string }>`
 const AdvertisementBanner = styled.div<{ position?: string }>`
 	width: 100%;
 	height: 100%;
-	aspect-ratio: ${({ position }) => (position === 'left' || position === 'right' ? '1/2' : '3/1')};
+	aspect-ratio: ${({ position }) => (position === 'left' || position === 'right' ? '1/2' : '32/10')};
 	transition: transform 0.2s ease-in-out;
 	overflow: hidden;
 	cursor: pointer;
@@ -149,7 +149,7 @@ const CloseButton = styled.button`
 `;
 
 export const AdShardTech = (props: AdShardTechProps) => {
-	const [shardsTechCore, setShardsTechCore] = useState<any | null>(null);
+	const [shardsTechCore, setShardsTechCore] = useState<ShardsDSPCore | null>(null);
 	const [ad, setAd] = useState<AdsType | null>(null);
 	const [isAdRendered, setIsAdRendered] = useState(false);
 	const [isVisible, setIsVisible] = useState(true);
@@ -171,7 +171,9 @@ export const AdShardTech = (props: AdShardTechProps) => {
 	useEffect(() => {
 		if (shardsTechCore) {
 			shardsTechCore.getAdsByAdsBlock(props.adsBlockId).then((ads: AdsType[]) => {
-				setAd(ads[0]);
+				if (ads.length > 0) {
+					setAd(ads[0]);
+				}
 			});
 		}
 	}, [shardsTechCore, props.adsBlockId]);
@@ -217,7 +219,7 @@ export const AdShardTech = (props: AdShardTechProps) => {
 		setIsVisible(false);
 	};
 
-	if (!shardsTechCore || !isVisible) {
+	if (!shardsTechCore || !isVisible || !ad) {
 		return null;
 	}
 
