@@ -1,6 +1,7 @@
 export enum AdPosition {
 	BOTTOM = 'bottom',
 	TOP = 'top',
+	DEFAULT = 'default',
 }
 
 export enum MediaPosition {
