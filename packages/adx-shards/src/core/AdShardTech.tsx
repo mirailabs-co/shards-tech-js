@@ -25,7 +25,10 @@ const shine = keyframes`
 
 const AdvertisementSection = styled.div<{ position?: string }>`
 	position: fixed;
-	z-index: 999;
+	z-index: 9999;
+	border-radius: 8px;
+	overflow: hidden;
+	margin-top: 8px;
 	${({ position }) => (position === 'left' || position === 'right' ? 'width: 100px;' : 'height: 150px;')}
 
 	${({ position }) => {
@@ -66,16 +69,11 @@ const AdvertisementBanner = styled.div<{ position?: string }>`
 	width: 100%;
 	height: 100%;
 	aspect-ratio: ${({ position }) => (position === 'left' || position === 'right' ? '1/2' : '32/10')};
-	transition: transform 0.2s ease-in-out;
 	overflow: hidden;
 	cursor: pointer;
 	position: relative;
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 	border-radius: 0;
-
-	&:hover {
-		transform: scale(1.01);
-	}
 `;
 
 const ShineEffect = styled.div`
@@ -88,12 +86,42 @@ const ShineEffect = styled.div`
 const AdContent = styled.div`
 	width: 100%;
 	height: 100%;
+	position: relative;
+`;
+
+const AdContentMask = styled.div`
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 12px 16px;
+	background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #262626 80.9%);
+	z-index: 1;
+`;
+
+const AdTitle = styled.h3`
+	color: white;
+	margin: 0;
+	font-size: 14px;
+	font-weight: 700;
+	margin-bottom: 4px;
+`;
+
+const AdDescription = styled.p`
+	color: white;
+	margin: 0;
+	font-size: 12px;
 `;
 
 const AdContentImg = styled.img`
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+	transition: transform 0.2s ease-in-out;
+
+	&:hover {
+		transform: scale(1.01);
+	}
 `;
 
 const AdContentPlaceholder = styled.div`
@@ -111,12 +139,12 @@ const AdContentPlaceholderText = styled.span`
 
 const CloseButton = styled.button`
 	position: absolute;
-	top: 5px;
-	right: 5px;
-	width: 20px;
-	height: 20px;
+	top: 6px;
+	right: 6px;
+	width: 12px;
+	height: 12px;
 	border-radius: 50%;
-	background: rgba(0, 0, 0, 0.5);
+	background: #dddddd;
 	border: none;
 	cursor: pointer;
 	display: flex;
@@ -126,17 +154,13 @@ const CloseButton = styled.button`
 	padding: 0;
 	transition: background 0.2s ease;
 
-	&:hover {
-		background: rgba(0, 0, 0, 0.7);
-	}
-
 	&::before,
 	&::after {
 		content: '';
 		position: absolute;
-		width: 12px;
-		height: 2px;
-		background: white;
+		width: 6px;
+		height: 1px;
+		background: #000000;
 	}
 
 	&::before {
@@ -154,6 +178,8 @@ export const AdShardTech = (props: AdShardTechProps) => {
 	const [isAdRendered, setIsAdRendered] = useState(false);
 	const [isVisible, setIsVisible] = useState(true);
 
+	const title = ad?.adsCampaign?.[0]?.title || '';
+	const description = ad?.adsCampaign?.[0]?.desc || '';
 	const banner = ad?.adsCampaign?.[0]?.images?.[0]?.url || ad?.adsCampaign?.[0]?.logo || '';
 
 	const initShardsTechCore = async () => {
@@ -205,7 +231,29 @@ export const AdShardTech = (props: AdShardTechProps) => {
 		return () => clearInterval(intervalId);
 	}, [shardsTechCore, ad, isAdRendered]);
 
-	const onClickAd = () => {
+	const fetchNewAd = async () => {
+		if (shardsTechCore) {
+			const ads = await shardsTechCore.getAdsByAdsBlock(props.adsBlockId);
+			if (ads.length > 0) {
+				setAd(ads[0]);
+				setIsAdRendered(false);
+			}
+		}
+	};
+
+	useEffect(() => {
+		if (!shardsTechCore) {
+			return;
+		}
+
+		const intervalId = setInterval(() => {
+			fetchNewAd();
+		}, 30000);
+
+		return () => clearInterval(intervalId);
+	}, [shardsTechCore]);
+
+	const onClickAd = async () => {
 		if (ad?.adsCampaign?.[0]?.url) {
 			try {
 				window?.gtag('event', `${props.env || 'development'}-ad_banner_clicked`, {
@@ -216,13 +264,18 @@ export const AdShardTech = (props: AdShardTechProps) => {
 			} catch (error) {}
 
 			window.open(ad.adsCampaign[0].url, '_blank');
+			shardsTechCore?.doAd(ad);
+			await fetchNewAd();
 		}
-		shardsTechCore?.doAd(ad);
 	};
 
 	const handleClose = (e: React.MouseEvent) => {
 		e.stopPropagation();
 		setIsVisible(false);
+		setTimeout(() => {
+			setIsVisible(true);
+			fetchNewAd();
+		}, 30000);
 	};
 
 	if (!shardsTechCore || !isVisible || !ad) {
@@ -237,6 +290,12 @@ export const AdShardTech = (props: AdShardTechProps) => {
 				{banner ? (
 					<AdContent>
 						<AdContentImg src={banner} alt="Advertisement" />
+						{(title || description) && (
+							<AdContentMask>
+								{title && <AdTitle>{title}</AdTitle>}
+								{description && <AdDescription>{description}</AdDescription>}
+							</AdContentMask>
+						)}
 					</AdContent>
 				) : (
 					<AdContentPlaceholder>
