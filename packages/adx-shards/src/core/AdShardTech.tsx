@@ -23,6 +23,7 @@ const shine = keyframes`
 const AdvertisementSection = styled.div<{ position?: string; width?: number; borderRadius?: number }>`
 	aspect-ratio: 32/5;
 	margin-inline: 8px;
+	flex-shrink: 0;
 
 	${({ position, width, borderRadius }) =>
 		position === AdPosition.DEFAULT
@@ -164,8 +165,8 @@ export const AdShardTech = ({
 	position = AdPosition.DEFAULT,
 	adsBlockId,
 	appId,
-	width = 320,
-	borderRadius = 0,
+	width,
+	borderRadius,
 	options,
 	env,
 }: AdShardTechProps) => {
@@ -209,6 +210,7 @@ export const AdShardTech = ({
 			return;
 		}
 
+		console.log('VIEW AD');
 		shardsTechCore.viewAd(ad);
 		setIsAdRendered(true);
 
@@ -295,7 +297,7 @@ export const AdShardTech = ({
 
 	if (position === AdPosition.DEFAULT && !isValidSize) {
 		console.log('position, isValidSize ', position, isValidSize);
-		return null;
+		// return null;
 	}
 
 	if (!shardsTechCore || !isVisible || !ad) {
