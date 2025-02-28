@@ -7,68 +7,79 @@ import { ConnectType } from './core';
 export type AdShardTechProps = {
 	adsBlockId: string;
 	appId: string;
+	width?: number;
+	borderRadius?: number;
 	options?: ConnectType;
 	position?: AdPosition;
 	env?: string;
 };
-
-const float = keyframes`
-0% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0); }
-`;
 
 const shine = keyframes`
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 `;
 
-const AdvertisementSection = styled.div<{ position?: string }>`
-	position: fixed;
-	z-index: 9999;
-	border-radius: 8px;
-	overflow: hidden;
-	margin-top: 8px;
-	${({ position }) => (position === 'left' || position === 'right' ? 'width: 100px;' : 'height: 150px;')}
+const AdvertisementSection = styled.div<{ position?: string; width?: number; borderRadius?: number }>`
+	aspect-ratio: 32/5;
+	margin-inline: 8px;
+
+	${({ position, width, borderRadius }) =>
+		position === AdPosition.DEFAULT
+			? `
+				position: relative;
+				min-width: 320px;
+				max-width: 512px;
+				width: ${width ? `${Math.min(Math.max(width, 320), 512)}px` : 'calc(100% - 16px)'};
+				border-radius: ${borderRadius ? `${Math.min(borderRadius, 24)}px` : '0'};
+				overflow: hidden;
+			`
+			: `
+				position: fixed;
+				z-index: 9999;
+				border-radius: 8px;
+				overflow: hidden;
+				${
+					position === 'left' || position === 'right'
+						? 'width: calc(100px - 16px);'
+						: `
+						min-width: 320px;
+						max-width: 512px;
+						width: calc(100% - 16px);
+					`
+				}
+			`}
 
 	${({ position }) => {
-		switch (position) {
-			case 'top':
-				return `
-					top: 0;
-					left: 50%;
-					transform: translateX(-50%);
-				`;
-			case 'left':
-				return `
-					left: 0;
-					top: 50%;
-					transform: translateY(-50%);
-				`;
-			case 'right':
-				return `
-					right: 0;
-					top: 50%;
-					transform: translateY(-50%);
-				`;
-			default: // bottom
-				return `
-					bottom: 0;
-					left: 50%;
-					transform: translateX(-50%);
-				`;
-		}
+		const positions = {
+			top: `
+				top: 8px;
+				left: 50%;
+				transform: translateX(-50%);
+			`,
+			left: `
+				left: 0;
+				top: 50%;
+				transform: translateY(-50%);
+			`,
+			right: `
+				right: 0;
+				top: 50%;
+				transform: translateY(-50%);
+			`,
+			bottom: `
+				bottom: 8px;
+				left: 50%;
+				transform: translateX(-50%);
+			`,
+		};
+		return position && position !== AdPosition.DEFAULT ? positions[position as keyof typeof positions] : '';
 	}}
-
-	@media (max-width: 768px) {
-		${({ position }) => (position === 'left' || position === 'right' ? 'width: 80px;' : 'height: 100px;')}
-	}
 `;
 
-const AdvertisementBanner = styled.div<{ position?: string }>`
+const AdvertisementBanner = styled.div`
 	width: 100%;
 	height: 100%;
-	aspect-ratio: ${({ position }) => (position === 'left' || position === 'right' ? '1/2' : '32/10')};
+	aspect-ratio: 32/5;
 	overflow: hidden;
 	cursor: pointer;
 	position: relative;
@@ -87,30 +98,6 @@ const AdContent = styled.div`
 	width: 100%;
 	height: 100%;
 	position: relative;
-`;
-
-const AdContentMask = styled.div`
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	padding: 12px 16px;
-	background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #262626 80.9%);
-	z-index: 1;
-`;
-
-const AdTitle = styled.h3`
-	color: white;
-	margin: 0;
-	font-size: 14px;
-	font-weight: 700;
-	margin-bottom: 4px;
-`;
-
-const AdDescription = styled.p`
-	color: white;
-	margin: 0;
-	font-size: 12px;
 `;
 
 const AdContentImg = styled.img`
@@ -172,20 +159,27 @@ const CloseButton = styled.button`
 	}
 `;
 
-export const AdShardTech = (props: AdShardTechProps) => {
+export const AdShardTech = ({
+	position = AdPosition.DEFAULT,
+	adsBlockId,
+	appId,
+	width,
+	borderRadius,
+	options,
+	env,
+}: AdShardTechProps) => {
 	const [shardsTechCore, setShardsTechCore] = useState<ShardsDSPCore | null>(null);
 	const [ad, setAd] = useState<AdsType | null>(null);
 	const [isAdRendered, setIsAdRendered] = useState(false);
 	const [isVisible, setIsVisible] = useState(true);
+	const [isValidSize, setIsValidSize] = useState(true);
 
-	const title = ad?.adsCampaign?.[0]?.title || '';
-	const description = ad?.adsCampaign?.[0]?.desc || '';
 	const banner = ad?.adsCampaign?.[0]?.images?.[0]?.url || ad?.adsCampaign?.[0]?.logo || '';
 
 	const initShardsTechCore = async () => {
 		try {
-			const shardsTech = await ShardsDSPCore.init({ clientId: props.appId, env: props.env || 'development' });
-			const [shardsTechCore] = await shardsTech.connect(props.options);
+			const shardsTech = await ShardsDSPCore.init({ clientId: appId, env: env || 'development' });
+			const [shardsTechCore] = await shardsTech.connect(options);
 			setShardsTechCore(shardsTechCore);
 		} catch (error) {
 			console.log(error);
@@ -194,17 +188,17 @@ export const AdShardTech = (props: AdShardTechProps) => {
 
 	useLayoutEffect(() => {
 		initShardsTechCore();
-	}, [props.appId]);
+	}, [appId]);
 
 	useEffect(() => {
 		if (shardsTechCore) {
-			shardsTechCore.getAdsByAdsBlock(props.adsBlockId).then((ads: AdsType[]) => {
+			shardsTechCore.getAdsByAdsBlock(adsBlockId).then((ads: AdsType[]) => {
 				if (ads.length > 0) {
 					setAd(ads[0]);
 				}
 			});
 		}
-	}, [shardsTechCore, props.adsBlockId]);
+	}, [shardsTechCore, adsBlockId]);
 
 	useEffect(() => {
 		if (!ad || !shardsTechCore || isAdRendered) {
@@ -218,7 +212,7 @@ export const AdShardTech = (props: AdShardTechProps) => {
 				setIsAdRendered(true);
 
 				try {
-					window?.gtag('event', `${props.env || 'development'}-ad_banner_viewed`, {
+					window?.gtag('event', `${env || 'development'}-ad_banner_viewed`, {
 						ad_id: ad?.adsCampaign?.[0]?.id,
 						ad_block_id: ad?.adsBlockId,
 						ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
@@ -233,7 +227,7 @@ export const AdShardTech = (props: AdShardTechProps) => {
 
 	const fetchNewAd = async () => {
 		if (shardsTechCore) {
-			const ads = await shardsTechCore.getAdsByAdsBlock(props.adsBlockId);
+			const ads = await shardsTechCore.getAdsByAdsBlock(adsBlockId);
 			if (ads.length > 0) {
 				setAd(ads[0]);
 				setIsAdRendered(false);
@@ -256,7 +250,7 @@ export const AdShardTech = (props: AdShardTechProps) => {
 	const onClickAd = async () => {
 		if (ad?.adsCampaign?.[0]?.url) {
 			try {
-				window?.gtag('event', `${props.env || 'development'}-ad_banner_clicked`, {
+				window?.gtag('event', `${env || 'development'}-ad_banner_clicked`, {
 					ad_id: ad?.adsCampaign?.[0]?.id,
 					ad_block_id: ad?.adsBlockId,
 					ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
@@ -278,24 +272,39 @@ export const AdShardTech = (props: AdShardTechProps) => {
 		}, 30000);
 	};
 
+	const validateDefaultSize = () => {
+		if (position !== AdPosition.DEFAULT) {
+			return true;
+		}
+
+		const adElement = document.getElementById('adx-advertisement');
+		const { width, height } = adElement?.getBoundingClientRect();
+
+		return width >= 320 && width <= 512 && height >= 50 && height <= 80;
+	};
+
+	useLayoutEffect(() => {
+		if (position === AdPosition.DEFAULT) {
+			setIsValidSize(validateDefaultSize());
+		}
+	}, [position]);
+
+	if (position === AdPosition.DEFAULT && !isValidSize) {
+		return null;
+	}
+
 	if (!shardsTechCore || !isVisible || !ad) {
 		return null;
 	}
 
 	return (
-		<AdvertisementSection position={props.position}>
-			<AdvertisementBanner id="adx-advertisement" onClick={onClickAd} position={props.position}>
-				{props.position && <CloseButton onClick={handleClose} />}
+		<AdvertisementSection position={position} width={width} borderRadius={borderRadius}>
+			<AdvertisementBanner id="adx-advertisement" onClick={onClickAd}>
+				{position !== AdPosition.DEFAULT && <CloseButton onClick={handleClose} />}
 				<ShineEffect />
 				{banner ? (
 					<AdContent>
 						<AdContentImg src={banner} alt="Advertisement" />
-						{(title || description) && (
-							<AdContentMask>
-								{title && <AdTitle>{title}</AdTitle>}
-								{description && <AdDescription>{description}</AdDescription>}
-							</AdContentMask>
-						)}
 					</AdContent>
 				) : (
 					<AdContentPlaceholder>
