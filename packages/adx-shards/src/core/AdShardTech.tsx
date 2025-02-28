@@ -3,6 +3,7 @@ import styled, { keyframes } from 'styled-components';
 import { ShardsDSPCore } from '..';
 import { AdPosition, AdsType } from '../constants/types';
 import { ConnectType } from './core';
+import { useInView } from 'react-intersection-observer';
 
 export type AdShardTechProps = {
 	adsBlockId: string;
@@ -163,8 +164,8 @@ export const AdShardTech = ({
 	position = AdPosition.DEFAULT,
 	adsBlockId,
 	appId,
-	width,
-	borderRadius,
+	width = 320,
+	borderRadius = 0,
 	options,
 	env,
 }: AdShardTechProps) => {
@@ -173,6 +174,10 @@ export const AdShardTech = ({
 	const [isAdRendered, setIsAdRendered] = useState(false);
 	const [isVisible, setIsVisible] = useState(true);
 	const [isValidSize, setIsValidSize] = useState(true);
+	const { ref, inView } = useInView({
+		threshold: 0.5,
+		triggerOnce: true,
+	});
 
 	const banner = ad?.adsCampaign?.[0]?.images?.[0]?.url || ad?.adsCampaign?.[0]?.logo || '';
 
@@ -201,29 +206,21 @@ export const AdShardTech = ({
 	}, [shardsTechCore, adsBlockId]);
 
 	useEffect(() => {
-		if (!ad || !shardsTechCore || isAdRendered) {
+		if (!ad || !shardsTechCore || isAdRendered || !inView) {
 			return;
 		}
 
-		const checkAdRendered = () => {
-			const adElement = document.getElementById('adx-advertisement');
-			if (adElement?.innerHTML.trim().length > 0) {
-				shardsTechCore.viewAd(ad);
-				setIsAdRendered(true);
+		shardsTechCore.viewAd(ad);
+		setIsAdRendered(true);
 
-				try {
-					window?.gtag('event', `${env || 'development'}-ad_banner_viewed`, {
-						ad_id: ad?.adsCampaign?.[0]?.id,
-						ad_block_id: ad?.adsBlockId,
-						ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
-					});
-				} catch (error) {}
-			}
-		};
-
-		const intervalId = setInterval(checkAdRendered, 1000);
-		return () => clearInterval(intervalId);
-	}, [shardsTechCore, ad, isAdRendered]);
+		try {
+			window?.gtag('event', `${env || 'development'}-ad_banner_viewed`, {
+				ad_id: ad?.adsCampaign?.[0]?.id,
+				ad_block_id: ad?.adsBlockId,
+				ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
+			});
+		} catch (error) {}
+	}, [shardsTechCore, ad, isAdRendered, inView, env]);
 
 	const fetchNewAd = async () => {
 		if (shardsTechCore) {
@@ -273,23 +270,32 @@ export const AdShardTech = ({
 	};
 
 	const validateDefaultSize = () => {
-		if (position !== AdPosition.DEFAULT) {
-			return true;
+		try {
+			if (position !== AdPosition.DEFAULT) {
+				return true;
+			}
+
+			const adElement = document.getElementById('adx-advertisement');
+			if (!adElement) {
+				return false;
+			}
+
+			const { width, height } = adElement.getBoundingClientRect();
+			return width >= 320 && width <= 512 && height >= 50 && height <= 80;
+		} catch (error) {
+			console.warn('Error validating ad size:', error);
+			return false;
 		}
-
-		const adElement = document.getElementById('adx-advertisement');
-		const { width, height } = adElement?.getBoundingClientRect();
-
-		return width >= 320 && width <= 512 && height >= 50 && height <= 80;
 	};
 
 	useLayoutEffect(() => {
-		if (position === AdPosition.DEFAULT) {
+		if (position === AdPosition.DEFAULT && ad) {
 			setIsValidSize(validateDefaultSize());
 		}
-	}, [position]);
+	}, [position, ad]);
 
 	if (position === AdPosition.DEFAULT && !isValidSize) {
+		console.log('position, isValidSize ', position, isValidSize);
 		return null;
 	}
 
@@ -299,8 +305,8 @@ export const AdShardTech = ({
 
 	return (
 		<AdvertisementSection position={position} width={width} borderRadius={borderRadius}>
-			<AdvertisementBanner id="adx-advertisement" onClick={onClickAd}>
-				{position !== AdPosition.DEFAULT && <CloseButton onClick={handleClose} />}
+			<AdvertisementBanner id="adx-advertisement" onClick={onClickAd} ref={ref}>
+				<CloseButton onClick={handleClose} />
 				<ShineEffect />
 				{banner ? (
 					<AdContent>
