@@ -176,7 +176,6 @@ export const AdShardTech = ({
 	const [isValidSize, setIsValidSize] = useState(true);
 	const { ref, inView } = useInView({
 		threshold: 0.5,
-		triggerOnce: true,
 	});
 
 	const banner = ad?.adsCampaign?.[0]?.images?.[0]?.url || ad?.adsCampaign?.[0]?.logo || '';
