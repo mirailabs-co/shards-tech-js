@@ -25,7 +25,7 @@ const shine = keyframes`
 
 const AdvertisementSection = styled.div<{ position?: string }>`
 	position: fixed;
-	z-index: 999;
+	z-index: 9999;
 	${({ position }) => (position === 'left' || position === 'right' ? 'width: 100px;' : 'height: 150px;')}
 
 	${({ position }) => {
@@ -205,7 +205,29 @@ export const AdShardTech = (props: AdShardTechProps) => {
 		return () => clearInterval(intervalId);
 	}, [shardsTechCore, ad, isAdRendered]);
 
-	const onClickAd = () => {
+	const fetchNewAd = async () => {
+		if (shardsTechCore) {
+			const ads = await shardsTechCore.getAdsByAdsBlock(props.adsBlockId);
+			if (ads.length > 0) {
+				setAd(ads[0]);
+				setIsAdRendered(false);
+			}
+		}
+	};
+
+	useEffect(() => {
+		if (!shardsTechCore) {
+			return;
+		}
+
+		const intervalId = setInterval(() => {
+			fetchNewAd();
+		}, 30000);
+
+		return () => clearInterval(intervalId);
+	}, [shardsTechCore]);
+
+	const onClickAd = async () => {
 		if (ad?.adsCampaign?.[0]?.url) {
 			try {
 				window?.gtag('event', `${props.env || 'development'}-ad_banner_clicked`, {
@@ -216,13 +238,18 @@ export const AdShardTech = (props: AdShardTechProps) => {
 			} catch (error) {}
 
 			window.open(ad.adsCampaign[0].url, '_blank');
+			shardsTechCore?.doAd(ad);
+			await fetchNewAd();
 		}
-		shardsTechCore?.doAd(ad);
 	};
 
 	const handleClose = (e: React.MouseEvent) => {
 		e.stopPropagation();
 		setIsVisible(false);
+		setTimeout(() => {
+			setIsVisible(true);
+			fetchNewAd();
+		}, 30000);
 	};
 
 	if (!shardsTechCore || !isVisible || !ad) {
