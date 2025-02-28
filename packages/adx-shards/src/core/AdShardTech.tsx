@@ -28,7 +28,7 @@ const AdvertisementSection = styled.div<{ position?: string }>`
 	z-index: 9999;
 	border-radius: 8px;
 	overflow: hidden;
-	margin-top: 8px;
+	${({ position }) => (position === 'top' ? 'margin-top: 8px;' : position === 'bottom' ? 'margin-bottom: 8px;' : '')}
 	${({ position }) => (position === 'left' || position === 'right' ? 'width: 100px;' : 'height: 150px;')}
 
 	${({ position }) => {
