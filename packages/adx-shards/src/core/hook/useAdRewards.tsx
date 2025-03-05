@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { ShardsDSPCore } from '../..';
 import { AdPosition, AdsMediaType, AdsType } from '../../constants/types';
 import { ConnectType } from '../core';
+import { logFirebaseEvent } from '../../lib/firebaseConfig';
 
 declare global {
 	interface Window {
@@ -160,6 +161,14 @@ export const AdRewards: FC<AdRewardsProps & PropsWithChildren> = ({
 							ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
 						});
 					} catch (error) {}
+
+					try {
+						logFirebaseEvent(`firebase-${env}-ad_video_completed`, {
+							ad_id: ad?.adsCampaign?.[0]?.id,
+							ad_block_id: ad?.adsBlockId,
+							ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
+						});
+					} catch (error) {}
 				} else if (response?.nextTimestamp) {
 					setNextTimestamp(response.nextTimestamp);
 				}
@@ -209,6 +218,14 @@ export const AdRewards: FC<AdRewardsProps & PropsWithChildren> = ({
 
 		try {
 			window?.gtag('event', `${env}-ad_video_started`, {
+				ad_id: ad?.adsCampaign?.[0]?.id,
+				ad_block_id: ad?.adsBlockId,
+				ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
+			});
+		} catch (error) {}
+
+		try {
+			logFirebaseEvent(`firebase-${env}-ad_video_started`, {
 				ad_id: ad?.adsCampaign?.[0]?.id,
 				ad_block_id: ad?.adsBlockId,
 				ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
