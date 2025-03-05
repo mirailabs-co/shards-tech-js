@@ -4,6 +4,7 @@ import { ShardsDSPCore } from '..';
 import { AdPosition, AdsType } from '../constants/types';
 import { ConnectType } from './core';
 import { useInView } from 'react-intersection-observer';
+import { logFirebaseEvent } from '../lib/firebaseConfig';
 
 export type AdShardTechProps = {
 	adsBlockId: string;
@@ -221,6 +222,14 @@ export const AdShardTech = ({
 				ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
 			});
 		} catch (error) {}
+
+		try {
+			logFirebaseEvent(`firebase-${env || 'development'}-ad_banner_viewed`, {
+				ad_id: ad?.adsCampaign?.[0]?.id,
+				ad_block_id: ad?.adsBlockId,
+				ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
+			});
+		} catch (error) {}
 	}, [shardsTechCore, ad, isAdRendered, inView, env]);
 
 	const fetchNewAd = async () => {
@@ -249,6 +258,14 @@ export const AdShardTech = ({
 		if (ad?.adsCampaign?.[0]?.url) {
 			try {
 				window?.gtag('event', `${env || 'development'}-ad_banner_clicked`, {
+					ad_id: ad?.adsCampaign?.[0]?.id,
+					ad_block_id: ad?.adsBlockId,
+					ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
+				});
+			} catch (error) {}
+
+			try {
+				logFirebaseEvent(`firebase-${env || 'development'}-ad_banner_clicked`, {
 					ad_id: ad?.adsCampaign?.[0]?.id,
 					ad_block_id: ad?.adsBlockId,
 					ad_campaign_id: ad?.adsCampaign?.[0]?.campaignId,
