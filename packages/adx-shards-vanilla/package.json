@@ -1,0 +1,42 @@
+{
+	"name": "@mirailabs-co/adx-shards-vanilla",
+	"version": "11.0.1",
+	"description": "AdX Shards JavaScript",
+	"author": "",
+	"repository": "github:mirailabs-co/shards-tech-js",
+	"homepage": "",
+	"files": [
+		"dist/"
+	],
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.js",
+	"types": "./dist/types/index.d.ts",
+	"scripts": {
+		"build": "rimraf -rf dist/ && concurrently 'yarn:build:cjs' 'yarn:build:esm' 'yarn:build:types'",
+		"build:cjs": "tsc -p tsconfig.cjs.json",
+		"build:esm": "tsc -p tsconfig.esm.json",
+		"build:types": "tsc -p tsconfig.types.json",
+		"clean": "rimraf -rf dist/ && rimraf *.tsbuildinfo",
+		"lint": "eslint src --quiet",
+		"test": "jest",
+		"build:umd": "mirai-scripts build"
+	},
+	"dependencies": {
+		"@fingerprintjs/fingerprintjs": "^4.5.1",
+		"eventemitter3": "^5.0.1",
+		"firebase": "^11.4.0",
+		"js-cookie": "^3.0.5",
+		"jwt-decode": "^3.1.2",
+		"query-string": "^6.0.0",
+		"react-intersection-observer": "^9.15.1",
+		"socket.io-client": "^4.7.2",
+		"styled-components": "^6.1.14"
+	},
+	"gitHead": "842e867f3047d8d302edc30fa622d143a3215cd9",
+	"publishConfig": {
+		"access": "public"
+	},
+	"devDependencies": {
+		"@types/js-cookie": "^3.0.6"
+	}
+}

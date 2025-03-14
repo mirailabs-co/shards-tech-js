@@ -41,15 +41,6 @@ const AdvertisementSection = styled.div<{ position?: string; width?: number; bor
 				z-index: 9999;
 				border-radius: 8px;
 				overflow: hidden;
-				${
-					position === 'left' || position === 'right'
-						? 'width: calc(100px - 16px);'
-						: `
-						min-width: 320px;
-						max-width: 512px;
-						width: calc(100% - 16px);
-					`
-				}
 			`}
 
 	${({ position }) => {
@@ -58,16 +49,6 @@ const AdvertisementSection = styled.div<{ position?: string; width?: number; bor
 				top: 8px;
 				left: 50%;
 				transform: translateX(-50%);
-			`,
-			left: `
-				left: 0;
-				top: 50%;
-				transform: translateY(-50%);
-			`,
-			right: `
-				right: 0;
-				top: 50%;
-				transform: translateY(-50%);
 			`,
 			bottom: `
 				bottom: 8px;
