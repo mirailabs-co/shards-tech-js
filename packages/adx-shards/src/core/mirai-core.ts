@@ -243,31 +243,6 @@ export class MiraiCore extends Core {
 		}
 	}
 
-	public async requestAd(ad: AdType) {
-		try {
-			if (!ad || !this.clientId) {
-				throw new Error('Ad and clientId is required');
-			}
-
-			const params = {
-				adId: ad._id,
-				app: this.clientId,
-				title: ad.title,
-				description: ad.description,
-				url: ad.url,
-				campaign: ad.campaign,
-				weight: ad.weight,
-				attributes: ad.attributes,
-			};
-
-			const response = await this.INSTANCE.adModule.createAd(params);
-			console.log('Request Ad :>> ', ad);
-			return response || [];
-		} catch (error) {
-			console.error('Error during createAd:', error);
-		}
-	}
-
 	public async createEvent(params: CreateEventParams) {
 		try {
 			const response = await this.INSTANCE.eventModule.createEvent(params);

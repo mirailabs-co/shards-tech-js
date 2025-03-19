@@ -12,8 +12,6 @@ import {
 } from '../../constants/types';
 import { BaseHttpService } from './http-base';
 
-const ADMIN_API_KEY = 'mHgk12ivveQm2vqBk7lXFBkVX9YweqgB';
-
 class ShardsDSPService extends BaseHttpService {
 	public static readonly INSTANCE = new ShardsDSPService();
 
@@ -65,12 +63,6 @@ class ShardsDSPService extends BaseHttpService {
 					'x-client-id': clientId,
 				},
 			);
-		},
-
-		createAd: async (params: CreateAdParams) => {
-			return this.sendPost('v1/ads', params, {
-				'api-key': ADMIN_API_KEY,
-			});
 		},
 
 		actionDoAd: async (
