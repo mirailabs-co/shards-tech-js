@@ -133,8 +133,8 @@ export class AdShardTech {
 					},
 				] as AdsType[];
 
-				// this.ad = ads[0];
-				this.ad = FAKE_ADS[0];
+				this.ad = ads[0];
+				// this.ad = FAKE_ADS[0];
 				this.isAdRendered = false;
 				this.updateAdContent();
 				this.validateSize();
