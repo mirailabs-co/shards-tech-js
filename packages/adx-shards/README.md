@@ -42,6 +42,27 @@ The `position` prop can be either:
 -   `"bottom"` (default) - Centered at bottom
 -   `"top"` - Centered at top
 
+### Interstitial Ads Integration
+
+Interstitial ads automatically display during navigation events in your application:
+
+```tsx
+import { AdInterstitial } from '@mirailabs-co/adx-shards';
+
+const App = () => {
+	return (
+		<>
+			<YourComponents />
+			<AdInterstitial
+				adsBlockId="ADS_BLOCK_ID"
+				appId="APP_ID"
+				env="production" // Optional: defaults to 'development'
+			/>
+		</>
+	);
+};
+```
+
 ### Rewarded Ads Integration
 
 For rewarded ads, you'll need to use both the `AdRewards` provider and `useAdRewards` hook:
@@ -77,14 +98,33 @@ const RewardButton = () => {
 };
 ```
 
-### 🔹 Notes:
+### 🔹 General Notes:
 
--   **`ADS_BLOCK_ID`** and **`APP_ID`** are required values. You can obtain them from [AdX Shards Publisher](https://publisher-adx.shards.tech/) (or development environment [AdX Shards Publisher Dev](https://publisher-dev-1737355217.shards.tech/)).
--   For Rewarded Ads:
+-   **Basic Ads:**
+
+    -   Display ads at fixed positions on the page
+    -   Can be positioned at top or bottom of the viewport
+    -   Suitable for applications requiring continuous ad display
+
+-   **Interstitial Ads:**
+
     -   Ads will be displayed as a full-screen overlay
-    -   Users must watch for at least 20 seconds before being able to skip
+    -   Users must watch for at least 20 seconds before skipping
+    -   Automatically display when users navigate between pages
+
+-   **Rewarded Ads:**
+
+    -   Ads will be displayed as a full-screen overlay
+    -   Users must watch for at least 20 seconds before skipping
+    -   Users actively choose to watch ads to receive rewards
+    -   Require both provider and hook integration
+    -   Track completion status through `isAdCompleted`
     -   `isAdCompleted` will be `true` when the user has finished watching the ad
-    -   Use `env="production"` when deploying to production
+
+-   **Common Requirements:**
+    -   **`ADS_BLOCK_ID`** and **`APP_ID`** are required. You can obtain them from [AdX Shards Publisher](https://publisher-adx.shards.tech/) (or development environment [AdX Shards Publisher Dev](https://publisher-dev-1737355217.shards.tech/))
+    -   Set `env="production"` when deploying to production
+    -   Set `env="development"` during development and testing
 
 ---
 
