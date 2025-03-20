@@ -4,6 +4,7 @@ export { MiraiCore as ShardsDSPCore } from './core/mirai-core';
 export { AdShardTech } from './core/AdShardTech';
 export { IConnection } from './connection/connection';
 export { AdRewards, useAdRewards } from './core/hook/useAdRewards';
+export { AdInterstitial } from './core/AdInterstitial';
 export * from './constants/types';
 export * from './errors';
 
