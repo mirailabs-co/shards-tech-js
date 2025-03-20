@@ -18,10 +18,8 @@ declare global {
 	}
 }
 
-// Global variables for route change detection
 const ROUTE_DETECTION = {
-	// Time interval for showing ads (5 seconds in milliseconds for testing)
-	adInterval: 5 * 1000, // 5 seconds instead of 3 minutes
+	adInterval: 5 * 1000,
 	lastAdShownTime: 0,
 	adSkippedInCurrentCycle: false,
 };
